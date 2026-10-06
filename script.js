@@ -1,4 +1,4 @@
-const TMDB_API_KEY = 'f3cefc2462aadaabd61feafa4ec78ce4';
+const TMDB_API_KEY = 'YOUR_API_KEY_HERE'; // حط المفتاح بتاعك هنا
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
@@ -7,29 +7,38 @@ const buttons = document.querySelectorAll('.filter-btn');
 
 let allData = [];
 
-// جلب البيانات من ملف JSON
 async function loadData() {
     try {
         const response = await fetch('data.json');
         allData = await response.json();
-        displayItems(allData);
+        
+        // عرض القسم الأول (مسلسلات عربي) تلقائياً عند فتح الموقع
+        const initialCategory = 'arabic_series_2026';
+        const filteredData = allData.filter(item => item.category === initialCategory);
+        displayItems(filteredData);
     } catch (error) {
         console.error('Error loading data:', error);
     }
 }
 
-// عرض الكروت
 async function displayItems(items) {
-    container.innerHTML = '';
+    container.innerHTML = '<p style="text-align:center; width:100%; color:var(--lavender-accent);">جاري تحميل البيانات والصور...</p>';
     
+    let htmlContent = '';
+
     for (const item of items) {
-        // لو مفيش بوستر، هنحاول نجيبه من TMDB
-        let posterUrl = 'https://via.placeholder.com/500x750?text=No+Poster';
+        let posterUrl = 'https://via.placeholder.com/500x750/1a1a24/b095f6?text=No+Poster';
         let globalRating = 'N/A';
+        let apiSeasons = '';
+        let apiEpisodes = '';
         
         try {
-            const type = item.category.includes('series') || item.category === 'anime' ? 'tv' : 'movie';
-            const searchUrl = `${TMDB_BASE_URL}/search/${type}?api_key=428989dbf5c3daeb30740a6b7d2bfbe4&query=${encodeURIComponent(item.name)}`;
+            const isTV = item.category.includes('series') || item.category === 'anime';
+            const type = isTV ? 'tv' : 'movie';
+            
+            // استخدام الاسم الإنجليزي لو موجود لتسهيل البحث، غير كده نستخدم الاسم العادي
+            const searchQuery = item.tmdb_search_name ? item.tmdb_search_name : item.name;
+            const searchUrl = `${TMDB_BASE_URL}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(searchQuery)}&language=ar-SA`;
             
             const res = await fetch(searchUrl);
             const tmdbData = await res.json();
@@ -38,61 +47,60 @@ async function displayItems(items) {
                 const result = tmdbData.results[0];
                 if (result.poster_path) posterUrl = IMG_BASE_URL + result.poster_path;
                 globalRating = result.vote_average ? result.vote_average.toFixed(1) : 'N/A';
+                
+                // جلب عدد الحلقات والمواسم من TMDB للأنمي والمسلسلات
+                if (isTV && result.id) {
+                    const detailsRes = await fetch(`${TMDB_BASE_URL}/tv/${result.id}?api_key=${TMDB_API_KEY}&language=en-US`);
+                    const details = await detailsRes.json();
+                    if(details.number_of_seasons) apiSeasons = details.number_of_seasons;
+                    if(details.number_of_episodes) apiEpisodes = details.number_of_episodes;
+                }
             }
         } catch(e) {
-            console.error("TMDB error:", e);
+            console.error("TMDB error for", item.name, e);
         }
 
-        const card = document.createElement('div');
-        card.className = 'card';
-        
         let statusBadge = '';
         if(item.status === 'completed') statusBadge = '<span class="status-badge status-completed">✓ اكتمل</span>';
-        if(item.status === 'dropped') statusBadge = `<span class="status-badge status-dropped">✗ وقف عند ${item.stoppedAt || 'غير محدد'}</span>`;
+        if(item.status === 'dropped') statusBadge = `<span class="status-badge status-dropped">✗ وقف عند ${item.stoppedAt || ''}</span>`;
 
-        card.innerHTML = `
-            ${statusBadge}
-            <img src="${posterUrl}" alt="${item.name}">
-            <div class="card-content">
-                <h3 class="movie-title">${item.name}</h3>
-                <p><strong>القسم:</strong> ${getCategoryName(item.category)}</p>
-                ${item.year_watched ? `<p><strong>سنة المشاهدة:</strong> ${item.year_watched}</p>` : ''}
-                ${item.seasons ? `<p><strong>عدد المواسم:</strong> ${item.seasons}</p>` : ''}
-                ${item.episodes ? `<p><strong>الحلقات:</strong> ${item.episodes}</p>` : ''}
-                
-                <div class="rating">
-                    <span>🌍 TMDB: ⭐ ${globalRating}</span>
-                    <span>👤 تقييمي: ⭐ ${item.myRating || 'لم يقيم'}</span>
+        // تقييمك الشخصي (لو صفر في الـ JSON هيتكتب "لم يقيم")
+        const myRatingDisplay = item.myRating && item.myRating > 0 ? item.myRating : 'لم يقيم';
+
+        // عرض تفاصيل المواسم والحلقات (لو متوفرة من API أو من JSON)
+        const displaySeasons = apiSeasons || item.seasons || '';
+        const displayEpisodes = apiEpisodes || item.episodes || '';
+
+        htmlContent += `
+            <div class="card">
+                ${statusBadge}
+                <img src="${posterUrl}" alt="${item.name}">
+                <div class="card-content">
+                    <h3 class="movie-title">${item.name}</h3>
+                    ${item.year_watched ? `<p><strong>سنة المشاهدة:</strong> ${item.year_watched}</p>` : ''}
+                    ${displaySeasons ? `<p><strong>المواسم:</strong> ${displaySeasons}</p>` : ''}
+                    ${displayEpisodes ? `<p><strong>الحلقات:</strong> ${displayEpisodes}</p>` : ''}
+                    
+                    <div class="rating">
+                        <span>🌍 IMDb/TMDB: ⭐ ${globalRating}</span>
+                        <span style="color:var(--lavender-accent)">👤 تقييمي: ⭐ ${myRatingDisplay}</span>
+                    </div>
                 </div>
             </div>
         `;
-        container.appendChild(card);
     }
+    
+    container.innerHTML = htmlContent;
 }
 
-function getCategoryName(cat) {
-    const cats = {
-        'arabic_series_2026': 'مسلسلات عربي 2026',
-        'movies_2026': 'أفلام 2026',
-        'english_series': 'مسلسلات أجنبي',
-        'anime': 'أنمي'
-    };
-    return cats[cat] || cat;
-}
-
-// الفلترة
 buttons.forEach(btn => {
     btn.addEventListener('click', () => {
         buttons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         
         const filter = btn.dataset.filter;
-        if (filter === 'all') {
-            displayItems(allData);
-        } else {
-            const filteredData = allData.filter(item => item.category === filter);
-            displayItems(filteredData);
-        }
+        const filteredData = allData.filter(item => item.category === filter);
+        displayItems(filteredData);
     });
 });
 
