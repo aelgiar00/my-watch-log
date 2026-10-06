@@ -1,16 +1,16 @@
 :root {
-    --lavender-bg: #E6E6FA;
-    --lavender-card: #F8F8FF;
-    --text-dark: #333333;
-    --text-light: #666666;
-    --accent: #9370DB;
+    --bg-dark: #0a0a0a; /* أسود عميق */
+    --card-bg: #1a1a24; /* أسود مائل للرمادي لتمييز الكارت */
+    --lavender-accent: #b095f6; /* لافندر فاتح ومشرق */
+    --text-main: #f0f0f0; /* أبيض ناصع للنصوص */
+    --text-muted: #a0a0b0; /* رمادي فاتح للتفاصيل */
 }
 
 body {
     font-family: 'Arial', sans-serif;
     font-weight: bold;
-    background-color: var(--lavender-bg);
-    color: var(--text-dark);
+    background-color: var(--bg-dark);
+    color: var(--text-main);
     margin: 0;
     padding: 20px;
     direction: rtl;
@@ -26,8 +26,9 @@ header {
 }
 
 header h1 {
-    color: var(--accent);
+    color: var(--lavender-accent);
     font-size: 3em;
+    text-shadow: 0 0 10px rgba(176, 149, 246, 0.3);
 }
 
 nav {
@@ -39,9 +40,9 @@ nav {
 }
 
 .filter-btn {
-    background-color: white;
-    color: var(--accent);
-    border: 2px solid var(--accent);
+    background-color: transparent;
+    color: var(--lavender-accent);
+    border: 2px solid var(--lavender-accent);
     padding: 10px 20px;
     border-radius: 20px;
     cursor: pointer;
@@ -51,8 +52,9 @@ nav {
 }
 
 .filter-btn:hover, .filter-btn.active {
-    background-color: var(--accent);
-    color: white;
+    background-color: var(--lavender-accent);
+    color: var(--bg-dark);
+    box-shadow: 0 0 15px rgba(176, 149, 246, 0.5);
 }
 
 #app-container {
@@ -64,23 +66,26 @@ nav {
 }
 
 .card {
-    background-color: var(--lavender-card);
+    background-color: var(--card-bg);
+    border: 1px solid #2a2a3a;
     border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     transition: 0.3s;
     position: relative;
 }
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    border-color: var(--lavender-accent);
+    box-shadow: 0 6px 15px rgba(176, 149, 246, 0.2);
 }
 
 .card img {
     width: 100%;
     height: 350px;
     object-fit: cover;
+    border-bottom: 2px solid #2a2a3a;
 }
 
 .card-content {
@@ -90,13 +95,13 @@ nav {
 .movie-title {
     font-size: 1.2em;
     margin: 0 0 10px;
-    color: var(--accent);
+    color: var(--lavender-accent);
 }
 
 .card p {
     margin: 5px 0;
     font-size: 0.9em;
-    color: var(--text-light);
+    color: var(--text-muted);
 }
 
 .status-badge {
@@ -107,15 +112,18 @@ nav {
     border-radius: 15px;
     font-size: 0.8em;
     color: white;
+    font-weight: bold;
+    background-color: rgba(0,0,0,0.7);
+    border: 1px solid;
 }
 
-.status-completed { background-color: #4CAF50; }
-.status-dropped { background-color: #F44336; }
+.status-completed { border-color: #4CAF50; color: #4CAF50; }
+.status-dropped { border-color: #F44336; color: #F44336; }
 
 .rating {
     display: flex;
     justify-content: space-between;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #eee;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #2a2a3a;
 }
