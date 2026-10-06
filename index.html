@@ -14,13 +14,27 @@
     </header>
 
     <nav>
-        <!-- الزرار الأول هو اللي هيكون شغال تلقائي أول ما الموقع يفتح -->
         <button class="filter-btn active" data-filter="arabic_series_2026">مسلسلات عربي</button>
         <button class="filter-btn" data-filter="arabic_movies_2026">أفلام عربي 2026</button>
         <button class="filter-btn" data-filter="english_movies_2026">أفلام أجنبي 2026</button>
         <button class="filter-btn" data-filter="english_series">مسلسلات أجنبي</button>
         <button class="filter-btn" data-filter="anime">أنمي</button>
     </nav>
+
+    <!-- لوحة إضافة عمل جديد -->
+    <div class="add-new-form">
+        <h3>➕ إضافة عمل جديد لقسم: <span id="current-category-name" style="color: var(--lavender-accent);">مسلسلات عربي</span></h3>
+        <div class="form-group">
+            <input type="text" id="new-item-name" placeholder="اسم العمل (فيلم/مسلسل/أنمي)" required>
+            <select id="new-item-status">
+                <option value="completed">اكتمل المشاهدة (✓)</option>
+                <option value="dropped">لم يكتمل (✗)</option>
+            </select>
+            <input type="text" id="new-item-stopped" placeholder="وقفت فين؟ (مثال: الموسم التاني)" style="display:none;">
+            <input type="number" id="new-item-rating" min="0" max="10" step="0.5" placeholder="تقييمك (من 10)">
+            <button onclick="addNewItem()">إضافة وبحث تلقائي 🔍</button>
+        </div>
+    </div>
 
     <main id="app-container">
         <!-- الكروت هتتعرض هنا بالـ JavaScript -->
