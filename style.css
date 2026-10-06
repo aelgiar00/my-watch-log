@@ -1,0 +1,121 @@
+:root {
+    --lavender-bg: #E6E6FA;
+    --lavender-card: #F8F8FF;
+    --text-dark: #333333;
+    --text-light: #666666;
+    --accent: #9370DB;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+    background-color: var(--lavender-bg);
+    color: var(--text-dark);
+    margin: 0;
+    padding: 20px;
+    direction: rtl;
+}
+
+h1, h2, h3, .movie-title {
+    font-family: 'Playfair Display', serif;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: var(--accent);
+    font-size: 3em;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background-color: white;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'Arial', sans-serif;
+    transition: 0.3s;
+}
+
+.filter-btn:hover, .filter-btn.active {
+    background-color: var(--accent);
+    color: white;
+}
+
+#app-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.card {
+    background-color: var(--lavender-card);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: 0.3s;
+    position: relative;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.card img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+}
+
+.card-content {
+    padding: 15px;
+}
+
+.movie-title {
+    font-size: 1.2em;
+    margin: 0 0 10px;
+    color: var(--accent);
+}
+
+.card p {
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: var(--text-light);
+}
+
+.status-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    color: white;
+}
+
+.status-completed { background-color: #4CAF50; }
+.status-dropped { background-color: #F44336; }
+
+.rating {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
