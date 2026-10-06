@@ -11,7 +11,6 @@ const stoppedInput = document.getElementById('new-item-stopped');
 let allData = [];
 let activeCategory = 'arabic_series_2026';
 
-// إظهار/إخفاء خانة "وقفت فين"
 statusSelect.addEventListener('change', function() {
     if(this.value === 'dropped') {
         stoppedInput.style.display = 'block';
@@ -21,7 +20,6 @@ statusSelect.addEventListener('change', function() {
     }
 });
 
-// تحميل الداتا من JSON ومن الإضافات الجديدة
 async function loadData() {
     try {
         const response = await fetch('data.json');
@@ -36,49 +34,34 @@ async function loadData() {
     }
 }
 
-// إضافة عمل جديد
 window.addNewItem = function() {
     const name = document.getElementById('new-item-name').value.trim();
     const status = statusSelect.value;
     const stoppedAt = stoppedInput.value;
     const myRating = document.getElementById('new-item-rating').value;
 
-    if(!name) {
-        alert('أرجوك اكتب اسم العمل الأول!');
-        return;
-    }
+    if(!name) { alert('أرجوك اكتب اسم العمل الأول!'); return; }
 
     const newItem = {
-        name: name,
-        category: activeCategory,
-        status: status,
+        name: name, category: activeCategory, status: status,
         stoppedAt: status === 'dropped' ? stoppedAt : "",
-        myRating: myRating ? parseFloat(myRating) : 0,
-        year_watched: new Date().getFullYear()
+        myRating: myRating ? parseFloat(myRating) : 0, year_watched: new Date().getFullYear()
     };
 
-    allData.push(newItem); // ضفناه للداتا
-
+    allData.push(newItem);
     const localItems = JSON.parse(localStorage.getItem('my_added_watch_items')) || [];
     localItems.push(newItem);
     localStorage.setItem('my_added_watch_items', JSON.stringify(localItems));
+    if(myRating) localStorage.setItem('rating_' + name, myRating);
 
-    if(myRating) {
-        localStorage.setItem('rating_' + name, myRating);
-    }
-
-    // تنظيف الفورم
     document.getElementById('new-item-name').value = '';
     document.getElementById('new-item-rating').value = '';
-    statusSelect.value = 'completed';
-    stoppedInput.style.display = 'none';
-    stoppedInput.value = '';
+    statusSelect.value = 'completed'; stoppedInput.style.display = 'none'; stoppedInput.value = '';
 
     const filteredData = allData.filter(item => item.category === activeCategory);
     displayItems(filteredData);
 }
 
-// حفظ التقييم 
 window.saveMyRating = function(encodedName) {
     const name = decodeURIComponent(encodedName);
     const safeId = encodedName.replace(/[^a-zA-Z0-9]/g, '_');
@@ -88,66 +71,49 @@ window.saveMyRating = function(encodedName) {
     if (inputField && inputField.value !== '') {
         localStorage.setItem('rating_' + name, inputField.value);
         displaySpan.innerHTML = `👤 تقييمي: ⭐ ${inputField.value}`;
-        
-        inputField.style.backgroundColor = '#4CAF50';
-        inputField.style.color = 'white';
-        setTimeout(() => {
-            inputField.style.backgroundColor = 'rgba(176, 149, 246, 0.1)';
-        }, 800);
-        
-        // مش هنعمل ريفريش هنا عشان الشاشة ماتتحركش فجأة وأنت بتقيم
-        // الترتيب هيحصل تلقائي أول ما تعمل ريفريش للصفحة أو تغير القسم
+        inputField.style.backgroundColor = '#4CAF50'; inputField.style.color = 'white';
+        setTimeout(() => { inputField.style.backgroundColor = 'rgba(176, 149, 246, 0.1)'; }, 800);
     }
 }
 
-// عرض الكروت وسحب البيانات من TMDB بسرعة الصاروخ وبالترتيب
 async function displayItems(items) {
     container.innerHTML = '<p style="text-align:center; width:100%; color:var(--lavender-accent); font-size:1.5em;">جاري التحميل بسرعة... 🚀</p>';
     
-    // 1. استخراج التقييمات النهائية عشان نرتب بيها
     const itemsWithRatings = items.map(item => {
         let savedRating = localStorage.getItem('rating_' + item.name);
         let finalRating = 0;
-        if (savedRating && savedRating !== '') {
-            finalRating = parseFloat(savedRating);
-        } else if (item.myRating) {
-            finalRating = parseFloat(item.myRating);
-        }
+        if (savedRating && savedRating !== '') finalRating = parseFloat(savedRating);
+        else if (item.myRating) finalRating = parseFloat(item.myRating);
         return { ...item, finalRating };
     });
 
-    // 2. ترتيب الأعمال من الأعلى تقييماً (10) للأقل
     itemsWithRatings.sort((a, b) => b.finalRating - a.finalRating);
 
-    // 3. جلب البيانات بالتوازي (Promise.all) لزيادة السرعة 10 أضعاف
     const fetchPromises = itemsWithRatings.map(async (item) => {
-        let posterUrl = 'https://via.placeholder.com/500x750/1a1a24/b095f6?text=No+Poster';
+        // لو أنت حاطط صورة في الداتا، هيستخدمها فوراً. لو لأ، هيحط البلايس هولدر لحد ما يجيبها من TMDB
+        let posterUrl = item.poster ? item.poster : 'https://via.placeholder.com/500x750/1a1a24/b095f6?text=No+Poster';
         let globalRating = 'N/A';
-        let apiSeasons = '';
-        let apiEpisodes = '';
+        let apiSeasons = ''; let apiEpisodes = '';
         
         try {
             const isTV = item.category.includes('series') || item.category === 'anime';
             const type = isTV ? 'tv' : 'movie';
             const searchQuery = item.tmdb_search_name ? item.tmdb_search_name : item.name;
-            
-            // شيلنا إجبار اللغة العربية عشان نجيب بوسترات أصلية جودتها عالية وبدون تكست
             const searchUrl = `${TMDB_BASE_URL}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(searchQuery)}&language=en-US`;
             
             const res = await fetch(searchUrl);
             const tmdbData = await res.json();
             
             if (tmdbData.results && tmdbData.results.length > 0) {
-                // البحث عن "تطابق تام" عشان يتجنب يجيب "وعد إبليس" لما تبحث عن "وعد"
                 let result = tmdbData.results.find(r => {
                     const title = r.name || r.title || r.original_name || r.original_title;
                     return title && title.trim() === searchQuery.trim();
                 });
-                
-                // لو ملقاش تطابق تام، ياخد أول وأشهر نتيجة
                 if (!result) result = tmdbData.results[0];
 
-                if (result.poster_path) posterUrl = IMG_BASE_URL + result.poster_path;
+                // التعديل السحري: لو TMDB جاب صورة، بس إنت مخصص صورة في الـ JSON، صورتك إنت اللي هتكسب
+                if (result.poster_path && !item.poster) posterUrl = IMG_BASE_URL + result.poster_path;
+                
                 globalRating = result.vote_average ? result.vote_average.toFixed(1) : 'N/A';
                 
                 if (isTV && result.id) {
@@ -157,14 +123,9 @@ async function displayItems(items) {
                     if(details.number_of_episodes) apiEpisodes = details.number_of_episodes;
                 }
             }
-        } catch(e) {
-            console.error("TMDB error for", item.name, e);
-        }
+        } catch(e) { console.error("TMDB error", e); }
 
-        let statusBadge = '';
-        if(item.status === 'completed') statusBadge = '<span class="status-badge status-completed">✓ اكتمل</span>';
-        if(item.status === 'dropped') statusBadge = `<span class="status-badge status-dropped">✗ وقف عند ${item.stoppedAt || ''}</span>`;
-
+        let statusBadge = item.status === 'completed' ? '<span class="status-badge status-completed">✓ اكتمل</span>' : `<span class="status-badge status-dropped">✗ وقف عند ${item.stoppedAt || ''}</span>`;
         const displayRating = item.finalRating > 0 ? item.finalRating : 'لم يقيم';
         const displaySeasons = apiSeasons || item.seasons || '';
         const displayEpisodes = apiEpisodes || item.episodes || '';
@@ -179,35 +140,28 @@ async function displayItems(items) {
                     ${item.year_watched ? `<p><strong>السنة:</strong> ${item.year_watched}</p>` : ''}
                     ${displaySeasons ? `<p><strong>المواسم:</strong> ${displaySeasons}</p>` : ''}
                     ${displayEpisodes ? `<p><strong>الحلقات:</strong> ${displayEpisodes}</p>` : ''}
-                    
                     <div class="rating">
                         <span>🌍 IMDb: ⭐ ${globalRating}</span>
                         <span style="color:var(--lavender-accent)" id="display_${safeId}">👤 تقييمي: ⭐ ${displayRating}</span>
                     </div>
-                    
                     <div class="user-rating-control">
                         <input type="number" min="0" max="10" step="0.5" placeholder="تقييمك" id="input_${safeId}" value="${item.finalRating > 0 ? item.finalRating : ''}">
                         <button onclick="saveMyRating('${encodeURIComponent(item.name)}')">حفظ</button>
                     </div>
                 </div>
-            </div>
-        `;
+            </div>`;
     });
 
-    // انتظار تحميل كل الكروت في نفس الوقت ودمجهم
     const htmlArray = await Promise.all(fetchPromises);
     container.innerHTML = htmlArray.join('');
 }
 
-// التحكم في الأزرار
 buttons.forEach(btn => {
     btn.addEventListener('click', () => {
         buttons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        
         activeCategory = btn.dataset.filter;
         currentCategorySpan.innerText = btn.innerText;
-        
         const filteredData = allData.filter(item => item.category === activeCategory);
         displayItems(filteredData);
     });
