@@ -6,6 +6,7 @@
     --text-main: #f0f0f0;
     --text-muted: #a0a0b0;
     --danger: #ff4d4d;
+    --heart-red: #ff3366;
     --gold: #ffd700;
 }
 
@@ -26,6 +27,55 @@ h1, h2, h3, .movie-title {
 header {
     text-align: center;
     margin-bottom: 25px;
+    position: relative;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* تصميم زرار المفضلة (Love) أقصى الشمال */
+.fav-header-btn {
+    position: absolute;
+    left: 0;
+    top: 10px;
+    background-color: var(--card-bg);
+    color: var(--text-main);
+    border: 2px solid var(--heart-red);
+    padding: 10px 18px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.95em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+    box-shadow: 0 0 10px rgba(255, 51, 102, 0.2);
+}
+
+.heart-icon {
+    width: 20px;
+    height: 20px;
+    fill: var(--heart-red);
+    transition: 0.3s;
+}
+
+.fav-header-btn:hover, .fav-header-btn.active {
+    background-color: var(--heart-red);
+    color: white;
+    box-shadow: 0 0 20px rgba(255, 51, 102, 0.6);
+    transform: scale(1.05);
+}
+
+.fav-header-btn:hover .heart-icon, .fav-header-btn.active .heart-icon {
+    fill: white;
+}
+
+@media (max-width: 768px) {
+    .fav-header-btn {
+        position: static;
+        margin: 0 auto 15px auto;
+    }
 }
 
 .logo-container {
@@ -212,7 +262,6 @@ nav {
     color: var(--lavender-accent);
 }
 
-/* تنسيق معلومات المواسم والحلقات و IMDb جنب بعض */
 .meta-info {
     display: flex;
     flex-wrap: wrap;
@@ -227,6 +276,12 @@ nav {
     border-radius: 8px;
     font-size: 0.85em;
     color: var(--text-muted);
+}
+
+.cat-tag {
+    background: rgba(176, 149, 246, 0.15);
+    border-color: var(--lavender-accent);
+    color: var(--lavender-accent);
 }
 
 .imdb-tag {
@@ -277,7 +332,6 @@ nav {
     transform: scale(1.1);
 }
 
-/* خانة تقييمي الشخصي المستقلة تحت */
 .my-rating-box {
     margin-top: auto;
     padding-top: 12px;
