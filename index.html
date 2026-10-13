@@ -16,7 +16,8 @@
             <svg viewBox="0 0 24 24" class="heart-icon">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
             </svg>
-            <span>المفضلة (Top)</span>
+            <span class="btn-label">المفضلة (Top)</span>
+            <span id="fav-count-badge" class="btn-count">0</span>
         </button>
 
         <div class="logo-container">
@@ -32,20 +33,20 @@
         <p>الأرشيف الشخصي للأفلام والمسلسلات والأنمي</p>
     </header>
 
-    <!-- الأقسام الرئيسية (تم إزالة 2026 من أزرار الأفلام) -->
+    <!-- الأقسام الرئيسية -->
     <nav id="main-nav">
-        <button class="filter-btn active" data-filter="arabic_series_2026">مسلسلات عربي</button>
-        <button class="filter-btn" data-filter="arabic_movies_2026">أفلام عربي</button>
-        <button class="filter-btn" data-filter="english_movies_2026">أفلام أجنبي</button>
-        <button class="filter-btn" data-filter="english_series">مسلسلات أجنبي</button>
-        <button class="filter-btn" data-filter="anime">أنمي</button>
-        <button class="filter-btn" data-filter="cinema">🎟️ سينما</button>
+        <button class="filter-btn active" data-filter="arabic_series_2026"><span class="btn-label">مسلسلات عربي</span></button>
+        <button class="filter-btn" data-filter="arabic_movies_2026"><span class="btn-label">أفلام عربي</span></button>
+        <button class="filter-btn" data-filter="english_movies_2026"><span class="btn-label">أفلام أجنبي</span></button>
+        <button class="filter-btn" data-filter="english_series"><span class="btn-label">مسلسلات أجنبي</span></button>
+        <button class="filter-btn" data-filter="anime"><span class="btn-label">أنمي</span></button>
+        <button class="filter-btn" data-filter="cinema"><span class="btn-label">🎟️ سينما</span></button>
     </nav>
 
-    <!-- القسم الفرعي (يظهر فقط في المسلسلات الأجنبي والأنمي) -->
+    <!-- القسم الفرعي (للمسلسلات الأجنبي والأنمي) -->
     <div id="sub-nav" class="sub-nav" style="display: none;">
-        <button id="sub-btn-completed" class="sub-filter-btn active" data-subfilter="completed">✅ أنميات كملتها</button>
-        <button id="sub-btn-dropped" class="sub-filter-btn" data-subfilter="dropped">❌ أنميات وقفتها</button>
+        <button id="sub-btn-completed" class="sub-filter-btn active" data-subfilter="completed"></button>
+        <button id="sub-btn-dropped" class="sub-filter-btn" data-subfilter="dropped"></button>
     </div>
 
     <!-- لوحة إضافة عمل جديد -->
@@ -66,6 +67,14 @@
             <input type="text" id="new-item-stopped" placeholder="وقفت فين؟ (مثال: الموسم التاني)" style="display:none;">
             <input type="number" id="new-item-rating" min="0" max="10" step="0.5" placeholder="تقييمك (من 10)">
             <button onclick="addNewItem()">إضافة وبحث تلقائي 🔍</button>
+        </div>
+    </div>
+
+    <!-- شريط عرض إجمالي العدد في القسم الحالي -->
+    <div class="section-stats-wrapper">
+        <div id="section-counter-banner" class="section-counter-banner">
+            <span id="banner-title">إجمالي مسلسلات عربي:</span>
+            <span id="banner-count" class="count-number">0</span>
         </div>
     </div>
 
