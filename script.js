@@ -50,14 +50,13 @@ function getEffectiveRating(item) {
     return -1;
 }
 
-// توحيد الحروف العربي عشان البحث يلقط أي اسم حتى لو فيه اختلاف همزات
-function normalizeArabic(text) {
+function normalizeText(text) {
     if (!text) return '';
     return text.toString().toLowerCase().trim()
         .replace(/[أإآ]/g, 'ا')
         .replace(/ة/g, 'ه')
         .replace(/ى/g, 'ي')
-        .replace(/[؟!.,،\-_]/g, '')
+        .replace(/[؟!.,،:\-_]/g, '')
         .replace(/\s+/g, ' ');
 }
 
@@ -213,10 +212,13 @@ window.saveMyRating = function(encodedName) {
     }
 }
 
-// دالة البحث الذكي الشامل في TMDB (عربي + إنجليزي + أسماء بديلة)
+// دالة البحث المفصولة: إنجليزي صافي للأجنبي والأنمي، وعربي صافي للعربي
 async function fetchSmartTMDBData(item) {
     const isTV = item.category.includes('series') || item.category === 'anime';
     const type = isTV ? 'tv' : 'movie';
+    
+    // تحديد هل العمل عربي ولا أجنبي/أنمي
+    const isArabicCategory = item.category.startsWith('arabic_') || (item.category === 'cinema' && item.lang === 'ar');
 
     let posterUrl = null;
     let globalRating = null;
@@ -227,7 +229,9 @@ async function fetchSmartTMDBData(item) {
     // 1. لو فيه ID مباشر من TMDB
     if (matchedId) {
         try {
-            const directRes = await fetch(`${TMDB_BASE_URL}/${type}/${matchedId}?api_key=${TMDB_API_KEY}&language=ar-EG`);
+            // لو أجنبي أو أنمي بنطلب en-US فقط عشان مستحيل يجيب بوستر مدبلج عربي
+            const langParam = isArabicCategory ? 'ar-EG' : 'en-US';
+            const directRes = await fetch(`${TMDB_BASE_URL}/${type}/${matchedId}?api_key=${TMDB_API_KEY}&language=${langParam}`);
             const directData = await directRes.json();
             if (directData.poster_path) posterUrl = IMG_BASE_URL + directData.poster_path;
             if (directData.vote_average && directData.vote_average > 0) globalRating = directData.vote_average.toFixed(1);
@@ -235,15 +239,10 @@ async function fetchSmartTMDBData(item) {
                 if (directData.number_of_seasons) apiSeasons = directData.number_of_seasons;
                 if (directData.number_of_episodes) apiEpisodes = directData.number_of_episodes;
             }
-            if (!posterUrl) {
-                const enRes = await fetch(`${TMDB_BASE_URL}/${type}/${matchedId}?api_key=${TMDB_API_KEY}&language=en-US`);
-                const enData = await enRes.json();
-                if (enData.poster_path) posterUrl = IMG_BASE_URL + enData.poster_path;
-            }
         } catch(e) { console.error(e); }
     }
 
-    // 2. البحث الذكي بكل الأسماء المحتملة (عربي وإنجليزي)
+    // 2. البحث بالاسم
     if (!posterUrl) {
         const queries = [];
         if (item.tmdb_search_name) queries.push(item.tmdb_search_name);
@@ -254,31 +253,44 @@ async function fetchSmartTMDBData(item) {
 
         for (const q of queries) {
             try {
-                // نبحث في النسخة العربي والنسخة الإنجليزي في نفس اللحظة عشان نضمن وجود البوستر
-                const [resAr, resEn] = await Promise.all([
-                    fetch(`${TMDB_BASE_URL}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(q)}&language=ar-EG`),
-                    fetch(`${TMDB_BASE_URL}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(q)}&language=en-US`)
-                ]);
-                const dataAr = await resAr.json();
-                const dataEn = await resEn.json();
+                let resultsList = [];
 
-                let combined = [...(dataAr.results || []), ...(dataEn.results || [])];
+                if (!isArabicCategory) {
+                    // للأفلام والمسلسلات الأجنبي والأنمي: نبحث بـ en-US فقط لمنع أي بوستر عربي مدبلج
+                    const resEn = await fetch(`${TMDB_BASE_URL}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(q)}&language=en-US`);
+                    const dataEn = await resEn.json();
+                    resultsList = dataEn.results || [];
+                } else {
+                    // للأعمال العربي فقط: نبحث في العربي والإنجليزي مع اشتراط أن تكون اللغة الأصلية للعمل هي العربية (ar) لمنع أفلام زي The Gentlemen
+                    const [resAr, resEn] = await Promise.all([
+                        fetch(`${TMDB_BASE_URL}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(q)}&language=ar-EG`),
+                        fetch(`${TMDB_BASE_URL}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(q)}&language=en-US`)
+                    ]);
+                    const dataAr = await resAr.json();
+                    const dataEn = await resEn.json();
 
-                // إزالة التكرار ودمج البوستر لو موجود في لغة والتانية لأ
-                const uniqueMap = new Map();
-                for (const r of combined) {
-                    if (!uniqueMap.has(r.id)) {
-                        uniqueMap.set(r.id, r);
-                    } else {
-                        const existing = uniqueMap.get(r.id);
-                        if (!existing.poster_path && r.poster_path) existing.poster_path = r.poster_path;
-                        if ((!existing.vote_average || existing.vote_average === 0) && r.vote_average > 0) existing.vote_average = r.vote_average;
+                    let combined = [...(dataAr.results || []), ...(dataEn.results || [])];
+                    
+                    // فلتر صارم لقسم العربي: لازم يكون العمل عربي الأصلي (original_language === 'ar') إلا لو هو مضاف استثناء
+                    const arabicOnly = combined.filter(r => r.original_language === 'ar');
+                    if (arabicOnly.length > 0) {
+                        combined = arabicOnly;
                     }
+
+                    const uniqueMap = new Map();
+                    for (const r of combined) {
+                        if (!uniqueMap.has(r.id)) {
+                            uniqueMap.set(r.id, r);
+                        } else {
+                            const existing = uniqueMap.get(r.id);
+                            if (!existing.poster_path && r.poster_path) existing.poster_path = r.poster_path;
+                            if ((!existing.vote_average || existing.vote_average === 0) && r.vote_average > 0) existing.vote_average = r.vote_average;
+                        }
+                    }
+                    resultsList = Array.from(uniqueMap.values());
                 }
-                let resultsList = Array.from(uniqueMap.values());
 
                 if (resultsList.length > 0) {
-                    // لو محددين سنة إصدار معينة (زي اللعبة 2020 أو وعد 2016 أو أيام 2021)
                     if (item.release_year) {
                         const yearFiltered = resultsList.filter(r => {
                             const d = r.first_air_date || r.release_date || '';
@@ -287,7 +299,6 @@ async function fetchSmartTMDBData(item) {
                         if (yearFiltered.length > 0) resultsList = yearFiltered;
                     }
 
-                    // لو محددين إنه عمل حديث بس
                     if (item.modern_only) {
                         const modernFiltered = resultsList.filter(r => {
                             const d = r.release_date || r.first_air_date || '';
@@ -297,12 +308,11 @@ async function fetchSmartTMDBData(item) {
                         if (modernFiltered.length > 0) resultsList = modernFiltered;
                     }
 
-                    const normQ = normalizeArabic(q);
+                    const normQ = normalizeText(q);
 
-                    // الأولوية للنتيجة اللي فيها بوستر واسمها مطابق
                     let exactWithPoster = resultsList.find(r => {
-                        const t1 = normalizeArabic(r.name || r.title);
-                        const t2 = normalizeArabic(r.original_name || r.original_title);
+                        const t1 = normalizeText(r.name || r.title);
+                        const t2 = normalizeText(r.original_name || r.original_title);
                         return r.poster_path && (t1 === normQ || t2 === normQ);
                     });
 
@@ -311,7 +321,7 @@ async function fetchSmartTMDBData(item) {
 
                     if (chosen) {
                         bestMatch = chosen;
-                        if (chosen.poster_path) break; // لقينا البوستر خلاص نوقف بحث
+                        if (chosen.poster_path) break;
                     }
                 }
             } catch (e) { console.error(e); }
@@ -324,10 +334,12 @@ async function fetchSmartTMDBData(item) {
         }
     }
 
-    // 3. جلب عدد المواسم والحلقات الدقيق وبوستر إضافي من ملف الصور في TMDB لو لزم الأمر
+    // 3. جلب عدد المواسم والحلقات الدقيق (أو البوستر الأصلي لو ناقص)
     if (matchedId) {
         try {
-            const detailsRes = await fetch(`${TMDB_BASE_URL}/${type}/${matchedId}?api_key=${TMDB_API_KEY}&language=ar-EG&append_to_response=images&include_image_language=ar,en,null`);
+            const detailLang = isArabicCategory ? 'ar-EG' : 'en-US';
+            const imgLang = isArabicCategory ? 'ar,en,null' : 'en,null';
+            const detailsRes = await fetch(`${TMDB_BASE_URL}/${type}/${matchedId}?api_key=${TMDB_API_KEY}&language=${detailLang}&append_to_response=images&include_image_language=${imgLang}`);
             const details = await detailsRes.json();
             
             if (isTV) {
@@ -349,26 +361,6 @@ async function fetchSmartTMDBData(item) {
         } catch(e) { console.error(e); }
     }
 
-    // 4. خط دفاع احتياطي من TVMaze لو العمل لسه مفيش ليه بوستر على TMDB
-    if (!posterUrl && isTV) {
-        const searchTerms = [item.tmdb_search_name, ...(item.alt_queries || []), item.name].filter(Boolean);
-        for (const term of searchTerms) {
-            try {
-                const tvMazeRes = await fetch(`https://api.tvmaze.com/singlesearch/shows?q=${encodeURIComponent(term)}`);
-                if (tvMazeRes.ok) {
-                    const tvMazeData = await tvMazeRes.json();
-                    if (tvMazeData && tvMazeData.image && (tvMazeData.image.original || tvMazeData.image.medium)) {
-                        posterUrl = tvMazeData.image.original || tvMazeData.image.medium;
-                        if (!globalRating && tvMazeData.rating && tvMazeData.rating.average) {
-                            globalRating = tvMazeData.rating.average;
-                        }
-                        break;
-                    }
-                }
-            } catch(e) {}
-        }
-    }
-
     return {
         posterUrl: posterUrl || `https://placehold.co/500x750/1a1a24/b095f6?text=${encodeURIComponent(item.name)}`,
         globalRating: globalRating || item.fallback_imdb || '7.5',
@@ -386,7 +378,7 @@ async function displayItems(items, isFavView = false) {
         return;
     }
 
-    container.innerHTML = '<p style="text-align:center; width:100%; color:var(--lavender-accent); font-size:1.5em;">جاري تحميل البوسترات والبيانات من TMDB... 🚀</p>';
+    container.innerHTML = '<p style="text-align:center; width:100%; color:var(--lavender-accent); font-size:1.5em;">جاري تحميل البوسترات الأصلية... 🚀</p>';
     
     const itemsWithRatings = items.map(item => {
         return { ...item, finalRating: getEffectiveRating(item) };
