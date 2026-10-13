@@ -4,8 +4,12 @@ const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
 const container = document.getElementById('app-container');
 const buttons = document.querySelectorAll('.filter-btn');
+const favBtn = document.getElementById('fav-btn');
 const subButtons = document.querySelectorAll('.sub-filter-btn');
-const animeSubNav = document.getElementById('anime-sub-nav');
+const subNav = document.getElementById('sub-nav');
+const subBtnCompleted = document.getElementById('sub-btn-completed');
+const subBtnDropped = document.getElementById('sub-btn-dropped');
+const addFormContainer = document.getElementById('add-form-container');
 const currentCategorySpan = document.getElementById('current-category-name');
 const statusSelect = document.getElementById('new-item-status');
 const stoppedInput = document.getElementById('new-item-stopped');
@@ -13,7 +17,16 @@ const cinemaLangSelect = document.getElementById('cinema-lang-select');
 
 let allData = [];
 let activeCategory = 'arabic_series_2026';
-let activeAnimeSubFilter = 'completed';
+let activeSubFilter = 'completed';
+
+const categoryNamesMap = {
+    'arabic_series_2026': 'مسلسلات عربي',
+    'arabic_movies_2026': 'أفلام عربي',
+    'english_movies_2026': 'أفلام أجنبي',
+    'english_series': 'مسلسلات أجنبي',
+    'anime': 'أنمي',
+    'cinema': 'سينما 🎟️'
+};
 
 statusSelect.addEventListener('change', function() {
     if(this.value === 'dropped') {
@@ -23,6 +36,17 @@ statusSelect.addEventListener('change', function() {
         stoppedInput.value = '';
     }
 });
+
+// دالة مساعدة لمعرفة التقييم النهائي لأي عمل
+function getEffectiveRating(item) {
+    let savedRating = localStorage.getItem('rating_' + item.name);
+    if (savedRating !== null && savedRating !== '') {
+        return parseFloat(savedRating);
+    } else if (item.myRating && item.myRating > 0) {
+        return parseFloat(item.myRating);
+    }
+    return -1;
+}
 
 async function loadData() {
     try {
@@ -41,11 +65,22 @@ async function loadData() {
 }
 
 function filterAndDisplay() {
-    let filteredData = allData.filter(item => item.category === activeCategory);
-    if (activeCategory === 'anime') {
-        filteredData = filteredData.filter(item => item.status === activeAnimeSubFilter);
+    // 1. لو واقفين في قسم المفضلة (Love) -> نجيب كل حاجة واخدة 9 أو 10 من كل الأقسام
+    if (activeCategory === 'favorites') {
+        const favData = allData.filter(item => getEffectiveRating(item) >= 9);
+        displayItems(favData, true);
+        return;
     }
-    displayItems(filteredData);
+
+    // 2. الأقسام العادية
+    let filteredData = allData.filter(item => item.category === activeCategory);
+    
+    // لو احنا في الأنمي أو المسلسلات الأجنبي، نفلتر حسب (مكتمل / متوقف)
+    if (activeCategory === 'anime' || activeCategory === 'english_series') {
+        filteredData = filteredData.filter(item => (item.status || 'completed') === activeSubFilter);
+    }
+    
+    displayItems(filteredData, false);
 }
 
 window.deleteItem = function(encodedName, category) {
@@ -98,8 +133,9 @@ window.addNewItem = function() {
     document.getElementById('new-item-rating').value = '';
     stoppedInput.value = '';
 
-    if (activeCategory === 'anime' && status !== activeAnimeSubFilter) {
-        activeAnimeSubFilter = status;
+    // لو ضفنا عمل في الأنمي أو المسلسلات الأجنبي بحالة مختلفة عن التاب المفتوح، ننقلك للتاب بتاعه
+    if ((activeCategory === 'anime' || activeCategory === 'english_series') && status !== activeSubFilter) {
+        activeSubFilter = status;
         subButtons.forEach(b => {
             b.classList.toggle('active', b.dataset.subfilter === status);
         });
@@ -108,7 +144,6 @@ window.addNewItem = function() {
     filterAndDisplay();
 }
 
-// حفظ التقييم وإعادة ترتيب القسم فوراً من 10 للأقل
 window.saveMyRating = function(encodedName) {
     const name = decodeURIComponent(encodedName);
     const safeId = encodedName.replace(/[^a-zA-Z0-9]/g, '_');
@@ -121,33 +156,26 @@ window.saveMyRating = function(encodedName) {
             return;
         }
         localStorage.setItem('rating_' + name, val);
-        
-        // إعادة عرض وترتيب الكروت فوراً عشان الأعلى يطلع فوق
         filterAndDisplay();
     }
 }
 
-async function displayItems(items) {
+async function displayItems(items, isFavView = false) {
     if (items.length === 0) {
-        container.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-muted); font-size:1.2em;">لا توجد أعمال في هذا القسم حالياً 🍿</p>';
+        const emptyMsg = isFavView 
+            ? 'لا توجد أعمال في المفضلة حالياً.. قيّم أي عمل بـ 9 أو 10 ليظهر هنا ❤️' 
+            : 'لا توجد أعمال في هذا القسم حالياً 🍿';
+        container.innerHTML = `<p style="text-align:center; width:100%; color:var(--text-muted); font-size:1.2em;">${emptyMsg}</p>`;
         return;
     }
 
     container.innerHTML = '<p style="text-align:center; width:100%; color:var(--lavender-accent); font-size:1.5em;">جاري التحميل والترتيب... 🚀</p>';
     
-    // حساب التقييم النهائي لكل عمل للترتيب
     const itemsWithRatings = items.map(item => {
-        let savedRating = localStorage.getItem('rating_' + item.name);
-        let finalRating = -1; // اللي ما اتقيمش ياخد -1 عشان ينزل في الآخر خالص
-        if (savedRating !== null && savedRating !== '') {
-            finalRating = parseFloat(savedRating);
-        } else if (item.myRating && item.myRating > 0) {
-            finalRating = parseFloat(item.myRating);
-        }
-        return { ...item, finalRating };
+        return { ...item, finalRating: getEffectiveRating(item) };
     });
 
-    // ترتيب تنازلي صارم: 10 ثم 9 ثم 8 ... واللي لم يقيم (-1) في الآخر
+    // ترتيب تنازلي من 10 للأقل
     itemsWithRatings.sort((a, b) => b.finalRating - a.finalRating);
 
     const fetchPromises = itemsWithRatings.map(async (item) => {
@@ -159,7 +187,6 @@ async function displayItems(items) {
             const isTV = item.category.includes('series') || item.category === 'anime';
             const type = isTV ? 'tv' : 'movie';
             
-            // 1. لو محددين ID مباشر من TMDB (أدق طريقة لمنع لخبطة الأنمي واللايف أكشن)
             if (item.tmdb_id) {
                 const directRes = await fetch(`${TMDB_BASE_URL}/${type}/${item.tmdb_id}?api_key=${TMDB_API_KEY}&language=en-US`);
                 const directData = await directRes.json();
@@ -170,7 +197,6 @@ async function displayItems(items) {
                     if(directData.number_of_episodes) apiEpisodes = directData.number_of_episodes;
                 }
             } else {
-                // 2. البحث بالاسم
                 const searchQuery = item.tmdb_search_name ? item.tmdb_search_name : item.name;
                 let searchUrl = `${TMDB_BASE_URL}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(searchQuery)}`;
                 
@@ -184,7 +210,6 @@ async function displayItems(items) {
                 if (tmdbData.results && tmdbData.results.length > 0) {
                     let resultsList = tmdbData.results;
 
-                    // لو العمل متحدد له إنه حديث (عشان نمنع أفلام التمانينات والقديم زي درويش وأوسكار والسلم والثعبان 1)
                     if (item.modern_only) {
                         resultsList = resultsList.filter(r => {
                             const dateStr = r.release_date || r.first_air_date || '';
@@ -222,7 +247,7 @@ async function displayItems(items) {
         const displayRating = hasValidRating ? item.finalRating : 'لم يقيم';
         const displaySeasons = apiSeasons || item.seasons || '';
         const displayEpisodes = apiEpisodes || item.episodes || '';
-        const safeId = encodeURIComponent(item.name).replace(/[^a-zA-Z0-9]/g, '_');
+        const safeId = encodeURIComponent(item.name + '_' + item.category).replace(/[^a-zA-Z0-9]/g, '_');
 
         return `
             <div class="card">
@@ -232,15 +257,14 @@ async function displayItems(items) {
                 <div class="card-content">
                     <h3 class="movie-title">${item.name}</h3>
                     
-                    <!-- منطقة التفاصيل العليا: السنة + المواسم + الحلقات + تقييم IMDb جنب بعض -->
                     <div class="meta-info">
+                        ${isFavView ? `<span class="meta-tag cat-tag">📌 ${categoryNamesMap[item.category] || item.category}</span>` : ''}
                         ${item.year_watched ? `<span class="meta-tag">📅 ${item.year_watched}</span>` : ''}
                         ${displaySeasons ? `<span class="meta-tag">📺 المواسم: ${displaySeasons}</span>` : ''}
                         ${displayEpisodes ? `<span class="meta-tag">🎞️ الحلقات: ${displayEpisodes}</span>` : ''}
                         <span class="meta-tag imdb-tag">🌍 IMDb: ⭐ ${globalRating}</span>
                     </div>
                     
-                    <!-- تقييمي الشخصي مفصول تحت لوحده -->
                     <div class="my-rating-box" id="display_${safeId}">
                         👤 تقييمي الشخصي: ⭐ ${displayRating}
                     </div>
@@ -257,34 +281,68 @@ async function displayItems(items) {
     container.innerHTML = htmlArray.join('');
 }
 
+// تحديث شكل ونصوص الشريط الفرعي حسب القسم (أنمي أو مسلسلات أجنبي)
+function updateSubNavUI() {
+    if (activeCategory === 'anime') {
+        subNav.style.display = 'flex';
+        subBtnCompleted.innerText = '✅ أنميات كملتها';
+        subBtnDropped.innerText = '❌ أنميات وقفتها / ما شوفتهاش';
+    } else if (activeCategory === 'english_series') {
+        subNav.style.display = 'flex';
+        subBtnCompleted.innerText = '✅ مسلسلات كملتها';
+        subBtnDropped.innerText = '❌ مسلسلات وقفتها / ما كملتهاش';
+    } else {
+        subNav.style.display = 'none';
+    }
+}
+
+// الضغط على زرار المفضلة (Love)
+favBtn.addEventListener('click', () => {
+    buttons.forEach(b => b.classList.remove('active'));
+    favBtn.classList.add('active');
+    
+    activeCategory = 'favorites';
+    subNav.style.display = 'none';
+    addFormContainer.style.display = 'none'; // إخفاء فورم الإضافة في صفحة المفضلة
+    
+    filterAndDisplay();
+});
+
+// الضغط على أزرار الأقسام الرئيسية
 buttons.forEach(btn => {
     btn.addEventListener('click', () => {
+        favBtn.classList.remove('active');
         buttons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         
         activeCategory = btn.dataset.filter;
         currentCategorySpan.innerText = btn.innerText;
+        addFormContainer.style.display = 'block';
         
-        animeSubNav.style.display = (activeCategory === 'anime') ? 'flex' : 'none';
+        updateSubNavUI();
         cinemaLangSelect.style.display = (activeCategory === 'cinema') ? 'block' : 'none';
 
-        if (activeCategory === 'anime') {
-            statusSelect.value = activeAnimeSubFilter;
-            stoppedInput.style.display = (activeAnimeSubFilter === 'dropped') ? 'block' : 'none';
+        if (activeCategory === 'anime' || activeCategory === 'english_series') {
+            statusSelect.value = activeSubFilter;
+            stoppedInput.style.display = (activeSubFilter === 'dropped') ? 'block' : 'none';
+        } else {
+            statusSelect.value = 'completed';
+            stoppedInput.style.display = 'none';
         }
         
         filterAndDisplay();
     });
 });
 
+// الضغط على الأزرار الفرعية (مكتمل / متوقف)
 subButtons.forEach(subBtn => {
     subBtn.addEventListener('click', () => {
         subButtons.forEach(b => b.classList.remove('active'));
         subBtn.classList.add('active');
         
-        activeAnimeSubFilter = subBtn.dataset.subfilter;
-        statusSelect.value = activeAnimeSubFilter;
-        stoppedInput.style.display = (activeAnimeSubFilter === 'dropped') ? 'block' : 'none';
+        activeSubFilter = subBtn.dataset.subfilter;
+        statusSelect.value = activeSubFilter;
+        stoppedInput.style.display = (activeSubFilter === 'dropped') ? 'block' : 'none';
 
         filterAndDisplay();
     });
