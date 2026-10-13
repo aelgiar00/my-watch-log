@@ -56,7 +56,7 @@
   { "name": "50-50", "tmdb_search_name": "خمسين خمسين", "alt_queries": ["50/50", "50-50", "خمسين / خمسين"], "seasons": 1, "episodes": 15, "fallback_imdb": "7.8", "category": "arabic_series_2026", "status": "completed", "year_watched": 2026, "myRating": 0 },
 
   { "name": "فيها ايه يعني", "tmdb_search_name": "فيها إيه يعني", "alt_queries": ["فيها إيه يعني؟!", "فيها ايه يعني"], "fallback_imdb": "8.1", "category": "arabic_movies_2026", "status": "completed", "year_watched": 2026, "myRating": 0 },
-  { "name": "السادة الافاضل", "tmdb_search_name": "السادة الأفاضل", "alt_queries": ["السادة الافاضل"], "fallback_imdb": "7.8", "category": "arabic_movies_2026", "status": "completed", "year_watched": 2026, "myRating": 0 },
+  { "name": "السادة الافاضل", "tmdb_search_name": "السادة الأفاضل", "alt_queries": ["السادة الافاضل"], "modern_only": true, "fallback_imdb": "7.8", "category": "arabic_movies_2026", "status": "completed", "year_watched": 2026, "myRating": 0 },
   { "name": "درويش", "tmdb_search_name": "درويش", "modern_only": true, "fallback_imdb": "7.9", "category": "arabic_movies_2026", "status": "completed", "year_watched": 2026, "myRating": 0 },
   { "name": "هيبتا ٢", "tmdb_search_name": "هيبتا: المناظرة الأخيرة", "alt_queries": ["هيبتا 2", "هيبتا المناظرة الأخيرة"], "modern_only": true, "fallback_imdb": "7.8", "category": "arabic_movies_2026", "status": "completed", "year_watched": 2026, "myRating": 0 },
   { "name": "الشاطر", "tmdb_search_name": "الشاطر", "modern_only": true, "fallback_imdb": "7.6", "category": "arabic_movies_2026", "status": "completed", "year_watched": 2026, "myRating": 0 },
