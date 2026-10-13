@@ -13,19 +13,34 @@
         <p>الأرشيف الشخصي للأفلام والمسلسلات والأنمي</p>
     </header>
 
-    <nav>
+    <!-- الأقسام الرئيسية -->
+    <nav id="main-nav">
         <button class="filter-btn active" data-filter="arabic_series_2026">مسلسلات عربي</button>
         <button class="filter-btn" data-filter="arabic_movies_2026">أفلام عربي 2026</button>
         <button class="filter-btn" data-filter="english_movies_2026">أفلام أجنبي 2026</button>
         <button class="filter-btn" data-filter="english_series">مسلسلات أجنبي</button>
         <button class="filter-btn" data-filter="anime">أنمي</button>
+        <button class="filter-btn" data-filter="cinema">🎟️ سينما</button>
     </nav>
+
+    <!-- القسم الفرعي للأنمي (يظهر فقط عند اختيار أنمي) -->
+    <div id="anime-sub-nav" class="sub-nav" style="display: none;">
+        <button class="sub-filter-btn active" data-subfilter="completed">✅ أنميات كملتها</button>
+        <button class="sub-filter-btn" data-subfilter="dropped">❌ أنميات وقفتها / ما شوفتهاش</button>
+    </div>
 
     <!-- لوحة إضافة عمل جديد -->
     <div class="add-new-form">
         <h3>➕ إضافة عمل جديد لقسم: <span id="current-category-name" style="color: var(--lavender-accent);">مسلسلات عربي</span></h3>
         <div class="form-group">
             <input type="text" id="new-item-name" placeholder="اسم العمل (فيلم/مسلسل/أنمي)" required>
+            
+            <!-- اختيار لغة الفيلم لو القسم هو السينما -->
+            <select id="cinema-lang-select" style="display: none;">
+                <option value="en">فيلم أجنبي 🌍</option>
+                <option value="ar">فيلم عربي 🇪🇬</option>
+            </select>
+
             <select id="new-item-status">
                 <option value="completed">اكتمل المشاهدة (✓)</option>
                 <option value="dropped">لم يكتمل (✗)</option>
