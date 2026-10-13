@@ -3,13 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Watch Log 🍿</title>
+    <title>My Watch Log</title>
+    <!-- لوجو التاب (Favicon) المرسوم باللافندر والأسود -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231a1a24' stroke='%23b095f6' stroke-width='6'/><circle cx='32' cy='32' r='10' fill='%23b095f6'/><circle cx='68' cy='32' r='10' fill='%23b095f6'/><path d='M25 58 Q50 82 75 58' stroke='%23b095f6' stroke-width='7' fill='none' stroke-linecap='round'/><polygon points='44,42 44,58 60,50' fill='%23ffffff'/></svg>">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <h1>My Watch Log 🍿</h1>
+        <div class="logo-container">
+            <svg class="main-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <rect width="100" height="100" rx="22" fill="#1a1a24" stroke="#b095f6" stroke-width="5"/>
+                <circle cx="32" cy="30" r="9" fill="#b095f6"/>
+                <circle cx="68" cy="30" r="9" fill="#b095f6"/>
+                <rect x="22" y="45" width="56" height="34" rx="8" fill="#0a0a0a" stroke="#b095f6" stroke-width="4"/>
+                <polygon points="43,53 43,71 61,62" fill="#b095f6"/>
+            </svg>
+            <h1>My Watch Log</h1>
+        </div>
         <p>الأرشيف الشخصي للأفلام والمسلسلات والأنمي</p>
     </header>
 
@@ -23,7 +34,7 @@
         <button class="filter-btn" data-filter="cinema">🎟️ سينما</button>
     </nav>
 
-    <!-- القسم الفرعي للأنمي (يظهر فقط عند اختيار أنمي) -->
+    <!-- القسم الفرعي للأنمي -->
     <div id="anime-sub-nav" class="sub-nav" style="display: none;">
         <button class="sub-filter-btn active" data-subfilter="completed">✅ أنميات كملتها</button>
         <button class="sub-filter-btn" data-subfilter="dropped">❌ أنميات وقفتها / ما شوفتهاش</button>
@@ -35,7 +46,6 @@
         <div class="form-group">
             <input type="text" id="new-item-name" placeholder="اسم العمل (فيلم/مسلسل/أنمي)" required>
             
-            <!-- اختيار لغة الفيلم لو القسم هو السينما -->
             <select id="cinema-lang-select" style="display: none;">
                 <option value="en">فيلم أجنبي 🌍</option>
                 <option value="ar">فيلم عربي 🇪🇬</option>
@@ -52,7 +62,7 @@
     </div>
 
     <main id="app-container">
-        <!-- الكروت هتتعرض هنا بالـ JavaScript -->
+        <!-- الكروت هتتعرض هنا -->
     </main>
 
     <script src="script.js"></script>
