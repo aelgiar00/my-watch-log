@@ -33,7 +33,7 @@ header {
     margin-right: auto;
 }
 
-/* تصميم زرار المفضلة (Love) أقصى الشمال */
+/* زرار المفضلة أقصى الشمال */
 .fav-header-btn {
     position: absolute;
     left: 0;
@@ -41,7 +41,7 @@ header {
     background-color: var(--card-bg);
     color: var(--text-main);
     border: 2px solid var(--heart-red);
-    padding: 10px 18px;
+    padding: 8px 16px;
     border-radius: 25px;
     cursor: pointer;
     font-weight: bold;
@@ -115,19 +115,46 @@ nav {
     background-color: transparent;
     color: var(--lavender-accent);
     border: 2px solid var(--lavender-accent);
-    padding: 10px 20px;
+    padding: 8px 18px;
     border-radius: 20px;
     cursor: pointer;
     font-weight: bold;
     font-family: 'Arial', sans-serif;
     transition: 0.3s;
     font-size: 0.95em;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .filter-btn:hover, .filter-btn.active {
     background-color: var(--lavender-accent);
     color: var(--bg-dark);
     box-shadow: 0 0 15px rgba(176, 149, 246, 0.5);
+}
+
+/* شارة الرقم داخل الأزرار */
+.btn-count {
+    background-color: rgba(176, 149, 246, 0.2);
+    color: var(--text-main);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    transition: 0.3s;
+}
+
+.filter-btn.active .btn-count, .filter-btn:hover .btn-count {
+    background-color: var(--bg-dark);
+    color: var(--lavender-accent);
+}
+
+.fav-header-btn .btn-count {
+    background-color: rgba(255, 51, 102, 0.25);
+}
+
+.fav-header-btn.active .btn-count, .fav-header-btn:hover .btn-count {
+    background-color: white;
+    color: var(--heart-red);
 }
 
 .sub-nav {
@@ -138,10 +165,11 @@ nav {
     padding: 10px;
     background: rgba(176, 149, 246, 0.05);
     border-radius: 15px;
-    max-width: 500px;
+    max-width: 550px;
     margin-left: auto;
     margin-right: auto;
     border: 1px solid rgba(176, 149, 246, 0.2);
+    flex-wrap: wrap;
 }
 
 .sub-filter-btn {
@@ -153,6 +181,9 @@ nav {
     cursor: pointer;
     font-weight: bold;
     transition: 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .sub-filter-btn:hover, .sub-filter-btn.active {
@@ -161,13 +192,18 @@ nav {
     border-color: var(--lavender-accent);
 }
 
+.sub-filter-btn.active .btn-count {
+    background-color: var(--bg-dark);
+    color: var(--lavender-accent);
+}
+
 .add-new-form {
     background-color: var(--card-bg);
     border: 1px dashed var(--lavender-accent);
     border-radius: 15px;
     padding: 20px;
     max-width: 850px;
-    margin: 0 auto 30px auto;
+    margin: 0 auto 20px auto;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
@@ -214,6 +250,36 @@ nav {
 .form-group button:hover {
     box-shadow: 0 0 15px rgba(176, 149, 246, 0.6);
     transform: translateY(-2px);
+}
+
+/* تصميم شريط إجمالي العدد الفخم فوق الكروت */
+.section-stats-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto 25px auto;
+    max-width: 1200px;
+}
+
+.section-counter-banner {
+    background: linear-gradient(135deg, #1a1a24 0%, #252038 100%);
+    border: 1px solid var(--lavender-accent);
+    padding: 10px 28px;
+    border-radius: 30px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 15px rgba(176, 149, 246, 0.2);
+    font-size: 1.1em;
+}
+
+.count-number {
+    background-color: var(--lavender-accent);
+    color: var(--bg-dark);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 1.15em;
+    font-weight: 900;
+    box-shadow: 0 0 10px rgba(176, 149, 246, 0.5);
 }
 
 #app-container {
