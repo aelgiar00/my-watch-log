@@ -50,9 +50,18 @@ function getEffectiveRating(item) {
     return -1;
 }
 
-// دالة تحديث العدادات على كل الأزرار وفي الشريط الرئيسي
+// توحيد الحروف العربي عشان البحث يلقط أي اسم حتى لو فيه اختلاف همزات
+function normalizeArabic(text) {
+    if (!text) return '';
+    return text.toString().toLowerCase().trim()
+        .replace(/[أإآ]/g, 'ا')
+        .replace(/ة/g, 'ه')
+        .replace(/ى/g, 'ي')
+        .replace(/[؟!.,،\-_]/g, '')
+        .replace(/\s+/g, ' ');
+}
+
 function updateAllCounts(currentFilteredCount = 0) {
-    // 1. تحديث عدادات الأزرار الرئيسية
     buttons.forEach(btn => {
         const cat = btn.dataset.filter;
         const count = allData.filter(item => item.category === cat).length;
@@ -65,11 +74,9 @@ function updateAllCounts(currentFilteredCount = 0) {
         badge.innerText = count;
     });
 
-    // 2. تحديث عداد المفضلة (9 و 10)
     const favCount = allData.filter(item => getEffectiveRating(item) >= 9).length;
     if (favCountBadge) favCountBadge.innerText = favCount;
 
-    // 3. تحديث عدادات الشريط الفرعي (لو مفتوح في الأنمي أو المسلسلات الأجنبي)
     if (activeCategory === 'anime' || activeCategory === 'english_series') {
         const compCount = allData.filter(item => item.category === activeCategory && (item.status || 'completed') === 'completed').length;
         const dropCount = allData.filter(item => item.category === activeCategory && item.status === 'dropped').length;
@@ -81,7 +88,6 @@ function updateAllCounts(currentFilteredCount = 0) {
         subBtnDropped.innerHTML = `<span>${dropLabel}</span> <span class="btn-count">${dropCount}</span>`;
     }
 
-    // 4. تحديث الشريط الكبير فوق الكروت
     let titleText = '';
     if (activeCategory === 'favorites') {
         titleText = '❤️ إجمالي الأعمال المفضلة (تقييم 9 و 10):';
@@ -207,6 +213,170 @@ window.saveMyRating = function(encodedName) {
     }
 }
 
+// دالة البحث الذكي الشامل في TMDB (عربي + إنجليزي + أسماء بديلة)
+async function fetchSmartTMDBData(item) {
+    const isTV = item.category.includes('series') || item.category === 'anime';
+    const type = isTV ? 'tv' : 'movie';
+
+    let posterUrl = null;
+    let globalRating = null;
+    let apiSeasons = '';
+    let apiEpisodes = '';
+    let matchedId = item.tmdb_id || null;
+
+    // 1. لو فيه ID مباشر من TMDB
+    if (matchedId) {
+        try {
+            const directRes = await fetch(`${TMDB_BASE_URL}/${type}/${matchedId}?api_key=${TMDB_API_KEY}&language=ar-EG`);
+            const directData = await directRes.json();
+            if (directData.poster_path) posterUrl = IMG_BASE_URL + directData.poster_path;
+            if (directData.vote_average && directData.vote_average > 0) globalRating = directData.vote_average.toFixed(1);
+            if (isTV) {
+                if (directData.number_of_seasons) apiSeasons = directData.number_of_seasons;
+                if (directData.number_of_episodes) apiEpisodes = directData.number_of_episodes;
+            }
+            if (!posterUrl) {
+                const enRes = await fetch(`${TMDB_BASE_URL}/${type}/${matchedId}?api_key=${TMDB_API_KEY}&language=en-US`);
+                const enData = await enRes.json();
+                if (enData.poster_path) posterUrl = IMG_BASE_URL + enData.poster_path;
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    // 2. البحث الذكي بكل الأسماء المحتملة (عربي وإنجليزي)
+    if (!posterUrl) {
+        const queries = [];
+        if (item.tmdb_search_name) queries.push(item.tmdb_search_name);
+        if (item.alt_queries && Array.isArray(item.alt_queries)) queries.push(...item.alt_queries);
+        if (!queries.includes(item.name)) queries.push(item.name);
+
+        let bestMatch = null;
+
+        for (const q of queries) {
+            try {
+                // نبحث في النسخة العربي والنسخة الإنجليزي في نفس اللحظة عشان نضمن وجود البوستر
+                const [resAr, resEn] = await Promise.all([
+                    fetch(`${TMDB_BASE_URL}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(q)}&language=ar-EG`),
+                    fetch(`${TMDB_BASE_URL}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(q)}&language=en-US`)
+                ]);
+                const dataAr = await resAr.json();
+                const dataEn = await resEn.json();
+
+                let combined = [...(dataAr.results || []), ...(dataEn.results || [])];
+
+                // إزالة التكرار ودمج البوستر لو موجود في لغة والتانية لأ
+                const uniqueMap = new Map();
+                for (const r of combined) {
+                    if (!uniqueMap.has(r.id)) {
+                        uniqueMap.set(r.id, r);
+                    } else {
+                        const existing = uniqueMap.get(r.id);
+                        if (!existing.poster_path && r.poster_path) existing.poster_path = r.poster_path;
+                        if ((!existing.vote_average || existing.vote_average === 0) && r.vote_average > 0) existing.vote_average = r.vote_average;
+                    }
+                }
+                let resultsList = Array.from(uniqueMap.values());
+
+                if (resultsList.length > 0) {
+                    // لو محددين سنة إصدار معينة (زي اللعبة 2020 أو وعد 2016 أو أيام 2021)
+                    if (item.release_year) {
+                        const yearFiltered = resultsList.filter(r => {
+                            const d = r.first_air_date || r.release_date || '';
+                            return d.startsWith(item.release_year.toString());
+                        });
+                        if (yearFiltered.length > 0) resultsList = yearFiltered;
+                    }
+
+                    // لو محددين إنه عمل حديث بس
+                    if (item.modern_only) {
+                        const modernFiltered = resultsList.filter(r => {
+                            const d = r.release_date || r.first_air_date || '';
+                            const y = parseInt(d.substring(0, 4));
+                            return y >= 2024;
+                        });
+                        if (modernFiltered.length > 0) resultsList = modernFiltered;
+                    }
+
+                    const normQ = normalizeArabic(q);
+
+                    // الأولوية للنتيجة اللي فيها بوستر واسمها مطابق
+                    let exactWithPoster = resultsList.find(r => {
+                        const t1 = normalizeArabic(r.name || r.title);
+                        const t2 = normalizeArabic(r.original_name || r.original_title);
+                        return r.poster_path && (t1 === normQ || t2 === normQ);
+                    });
+
+                    let anyWithPoster = resultsList.find(r => r.poster_path);
+                    let chosen = exactWithPoster || anyWithPoster || resultsList[0];
+
+                    if (chosen) {
+                        bestMatch = chosen;
+                        if (chosen.poster_path) break; // لقينا البوستر خلاص نوقف بحث
+                    }
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        if (bestMatch) {
+            matchedId = bestMatch.id;
+            if (bestMatch.poster_path) posterUrl = IMG_BASE_URL + bestMatch.poster_path;
+            if (bestMatch.vote_average && bestMatch.vote_average > 0) globalRating = bestMatch.vote_average.toFixed(1);
+        }
+    }
+
+    // 3. جلب عدد المواسم والحلقات الدقيق وبوستر إضافي من ملف الصور في TMDB لو لزم الأمر
+    if (matchedId) {
+        try {
+            const detailsRes = await fetch(`${TMDB_BASE_URL}/${type}/${matchedId}?api_key=${TMDB_API_KEY}&language=ar-EG&append_to_response=images&include_image_language=ar,en,null`);
+            const details = await detailsRes.json();
+            
+            if (isTV) {
+                if (details.number_of_seasons) apiSeasons = details.number_of_seasons;
+                if (details.number_of_episodes) apiEpisodes = details.number_of_episodes;
+            }
+            if (!globalRating && details.vote_average && details.vote_average > 0) {
+                globalRating = details.vote_average.toFixed(1);
+            }
+            if (!posterUrl) {
+                if (details.poster_path) {
+                    posterUrl = IMG_BASE_URL + details.poster_path;
+                } else if (details.images && details.images.posters && details.images.posters.length > 0) {
+                    posterUrl = IMG_BASE_URL + details.images.posters[0].file_path;
+                } else if (details.backdrop_path) {
+                    posterUrl = IMG_BASE_URL + details.backdrop_path;
+                }
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    // 4. خط دفاع احتياطي من TVMaze لو العمل لسه مفيش ليه بوستر على TMDB
+    if (!posterUrl && isTV) {
+        const searchTerms = [item.tmdb_search_name, ...(item.alt_queries || []), item.name].filter(Boolean);
+        for (const term of searchTerms) {
+            try {
+                const tvMazeRes = await fetch(`https://api.tvmaze.com/singlesearch/shows?q=${encodeURIComponent(term)}`);
+                if (tvMazeRes.ok) {
+                    const tvMazeData = await tvMazeRes.json();
+                    if (tvMazeData && tvMazeData.image && (tvMazeData.image.original || tvMazeData.image.medium)) {
+                        posterUrl = tvMazeData.image.original || tvMazeData.image.medium;
+                        if (!globalRating && tvMazeData.rating && tvMazeData.rating.average) {
+                            globalRating = tvMazeData.rating.average;
+                        }
+                        break;
+                    }
+                }
+            } catch(e) {}
+        }
+    }
+
+    return {
+        posterUrl: posterUrl || `https://placehold.co/500x750/1a1a24/b095f6?text=${encodeURIComponent(item.name)}`,
+        globalRating: globalRating || item.fallback_imdb || '7.5',
+        apiSeasons: apiSeasons || item.seasons || '',
+        apiEpisodes: apiEpisodes || item.episodes || ''
+    };
+}
+
 async function displayItems(items, isFavView = false) {
     if (items.length === 0) {
         const emptyMsg = isFavView 
@@ -216,7 +386,7 @@ async function displayItems(items, isFavView = false) {
         return;
     }
 
-    container.innerHTML = '<p style="text-align:center; width:100%; color:var(--lavender-accent); font-size:1.5em;">جاري التحميل والترتيب... 🚀</p>';
+    container.innerHTML = '<p style="text-align:center; width:100%; color:var(--lavender-accent); font-size:1.5em;">جاري تحميل البوسترات والبيانات من TMDB... 🚀</p>';
     
     const itemsWithRatings = items.map(item => {
         return { ...item, finalRating: getEffectiveRating(item) };
@@ -225,65 +395,7 @@ async function displayItems(items, isFavView = false) {
     itemsWithRatings.sort((a, b) => b.finalRating - a.finalRating);
 
     const fetchPromises = itemsWithRatings.map(async (item) => {
-        let posterUrl = item.poster ? item.poster : 'https://via.placeholder.com/500x750/1a1a24/b095f6?text=' + encodeURIComponent(item.name);
-        let globalRating = 'N/A';
-        let apiSeasons = ''; let apiEpisodes = '';
-        
-        try {
-            const isTV = item.category.includes('series') || item.category === 'anime';
-            const type = isTV ? 'tv' : 'movie';
-            
-            if (item.tmdb_id) {
-                const directRes = await fetch(`${TMDB_BASE_URL}/${type}/${item.tmdb_id}?api_key=${TMDB_API_KEY}&language=en-US`);
-                const directData = await directRes.json();
-                if (directData.poster_path && !item.poster) posterUrl = IMG_BASE_URL + directData.poster_path;
-                globalRating = directData.vote_average ? directData.vote_average.toFixed(1) : 'N/A';
-                if (isTV) {
-                    if(directData.number_of_seasons) apiSeasons = directData.number_of_seasons;
-                    if(directData.number_of_episodes) apiEpisodes = directData.number_of_episodes;
-                }
-            } else {
-                const searchQuery = item.tmdb_search_name ? item.tmdb_search_name : item.name;
-                let searchUrl = `${TMDB_BASE_URL}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(searchQuery)}`;
-                
-                if (item.release_year) {
-                    searchUrl += isTV ? `&first_air_date_year=${item.release_year}` : `&primary_release_year=${item.release_year}`;
-                }
-
-                const res = await fetch(searchUrl);
-                const tmdbData = await res.json();
-                
-                if (tmdbData.results && tmdbData.results.length > 0) {
-                    let resultsList = tmdbData.results;
-
-                    if (item.modern_only) {
-                        resultsList = resultsList.filter(r => {
-                            const dateStr = r.release_date || r.first_air_date || '';
-                            const year = parseInt(dateStr.substring(0, 4));
-                            return year >= 2024;
-                        });
-                    }
-
-                    if (resultsList.length > 0) {
-                        let result = resultsList.find(r => {
-                            const title = (r.name || r.title || r.original_name || r.original_title || '').toLowerCase();
-                            return title === searchQuery.trim().toLowerCase();
-                        });
-                        if (!result) result = resultsList[0];
-
-                        if (result.poster_path && !item.poster) posterUrl = IMG_BASE_URL + result.poster_path;
-                        globalRating = result.vote_average ? result.vote_average.toFixed(1) : 'N/A';
-                        
-                        if (isTV && result.id) {
-                            const detailsRes = await fetch(`${TMDB_BASE_URL}/tv/${result.id}?api_key=${TMDB_API_KEY}&language=en-US`);
-                            const details = await detailsRes.json();
-                            if(details.number_of_seasons) apiSeasons = details.number_of_seasons;
-                            if(details.number_of_episodes) apiEpisodes = details.number_of_episodes;
-                        }
-                    }
-                }
-            }
-        } catch(e) { console.error("TMDB error", e); }
+        const tmdbInfo = await fetchSmartTMDBData(item);
 
         let statusBadge = item.status === 'completed' 
             ? '<span class="status-badge status-completed">✓ اكتمل</span>' 
@@ -291,24 +403,23 @@ async function displayItems(items, isFavView = false) {
             
         const hasValidRating = item.finalRating >= 0;
         const displayRating = hasValidRating ? item.finalRating : 'لم يقيم';
-        const displaySeasons = apiSeasons || item.seasons || '';
-        const displayEpisodes = apiEpisodes || item.episodes || '';
         const safeId = encodeURIComponent(item.name).replace(/[^a-zA-Z0-9]/g, '_');
+        const fallbackImg = `https://placehold.co/500x750/1a1a24/b095f6?text=${encodeURIComponent(item.name)}`;
 
         return `
             <div class="card">
                 <button class="delete-btn" title="حذف من اللوج" onclick="deleteItem('${encodeURIComponent(item.name)}', '${item.category}')">✖</button>
                 ${statusBadge}
-                <img src="${posterUrl}" alt="${item.name}">
+                <img src="${tmdbInfo.posterUrl}" alt="${item.name}" onerror="this.onerror=null;this.src='${fallbackImg}';">
                 <div class="card-content">
                     <h3 class="movie-title">${item.name}</h3>
                     
                     <div class="meta-info">
                         ${isFavView ? `<span class="meta-tag cat-tag">📌 ${categoryNamesMap[item.category] || item.category}</span>` : ''}
                         ${item.year_watched ? `<span class="meta-tag">📅 ${item.year_watched}</span>` : ''}
-                        ${displaySeasons ? `<span class="meta-tag">📺 المواسم: ${displaySeasons}</span>` : ''}
-                        ${displayEpisodes ? `<span class="meta-tag">🎞️ الحلقات: ${displayEpisodes}</span>` : ''}
-                        <span class="meta-tag imdb-tag">🌍 IMDb: ⭐ ${globalRating}</span>
+                        ${tmdbInfo.apiSeasons ? `<span class="meta-tag">📺 المواسم: ${tmdbInfo.apiSeasons}</span>` : ''}
+                        ${tmdbInfo.apiEpisodes ? `<span class="meta-tag">🎞️ الحلقات: ${tmdbInfo.apiEpisodes}</span>` : ''}
+                        <span class="meta-tag imdb-tag">🌍 IMDb: ⭐ ${tmdbInfo.globalRating}</span>
                     </div>
                     
                     <div class="my-rating-box" id="display_${safeId}">
