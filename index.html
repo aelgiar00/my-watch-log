@@ -20,6 +20,16 @@
             <span id="fav-count-badge" class="btn-count">0</span>
         </button>
 
+        <!-- أزرار حماية وحفظ الداتا واسترجاع المخفي في أقصى اليمين -->
+        <div class="data-actions-bar">
+            <button onclick="exportFullDataJSON()" class="action-header-btn save-json-btn" title="تحميل ملف data.json بكل تعديلاتك وإضافاتك وتقييماتك">
+                💾 حفظ الداتا للكود (JSON)
+            </button>
+            <button onclick="restoreHiddenItems()" class="action-header-btn restore-btn" title="إظهار أي أعمال اختفت بسبب الحذف أو النقل">
+                🔄 استرجاع المختفي
+            </button>
+        </div>
+
         <div class="logo-container">
             <svg class="main-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <rect width="100" height="100" rx="22" fill="#1a1a24" stroke="#b095f6" stroke-width="5"/>
