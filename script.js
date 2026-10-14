@@ -17,10 +17,12 @@ const stoppedInput = document.getElementById('new-item-stopped');
 const cinemaLangSelect = document.getElementById('cinema-lang-select');
 const bannerTitle = document.getElementById('banner-title');
 const bannerCount = document.getElementById('banner-count');
+const installAppBtn = document.getElementById('install-app-btn');
 
 let allData = [];
 let activeCategory = 'arabic_series_2026';
 let activeSubFilter = 'completed';
+let deferredPrompt = null;
 
 const categoryNamesMap = {
     'arabic_series_2026': 'مسلسلات عربي',
@@ -30,6 +32,28 @@ const categoryNamesMap = {
     'anime': 'أنمي',
     'cinema': 'سينما 🎟️'
 };
+
+// تفعيل زرار تثبيت الموقع كـ App على الموبايل والكمبيوتر
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (installAppBtn) installAppBtn.style.display = 'inline-flex';
+});
+
+if (installAppBtn) {
+    installAppBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                installAppBtn.style.display = 'none';
+            }
+            deferredPrompt = null;
+        } else {
+            alert('لتثبيت التطبيق على موبايلك:\n- في أندرويد (Chrome): اضغط على الثلاث نقاط فوق واختار "الإضافة إلى الشاشة الرئيسية / Install App".\n- في آيفون (Safari): اضغط على زر المشاركة (Share) واختار "Add to Home Screen".');
+        }
+    });
+}
 
 statusSelect.addEventListener('change', function() {
     if(this.value === 'dropped') {
@@ -81,7 +105,7 @@ function updateAllCounts(currentFilteredCount = 0) {
         const dropCount = allData.filter(item => item.category === activeCategory && item.status === 'dropped').length;
         
         const compLabel = activeCategory === 'anime' ? '✅ أنميات كملتها' : '✅ مسلسلات كملتها';
-        const dropLabel = activeCategory === 'anime' ? '❌ أنميات وقفتها / ما شوفتهاش' : '❌ مسلسلات وقفتها / ما كملتهاش';
+        const dropLabel = activeCategory === 'anime' ? '❌ أنميات وقفتها' : '❌ مسلسلات وقفتها';
         
         subBtnCompleted.innerHTML = `<span>${compLabel}</span> <span class="btn-count">${compCount}</span>`;
         subBtnDropped.innerHTML = `<span>${dropLabel}</span> <span class="btn-count">${dropCount}</span>`;
@@ -89,7 +113,7 @@ function updateAllCounts(currentFilteredCount = 0) {
 
     let titleText = '';
     if (activeCategory === 'favorites') {
-        titleText = '❤️ إجمالي الأعمال المفضلة (تقييم 9 و 10):';
+        titleText = '❤️ إجمالي الأعمال المفضلة (9 و 10):';
     } else if (activeCategory === 'anime') {
         titleText = activeSubFilter === 'completed' ? '🎬 إجمالي أنميات كملتها:' : '🛑 إجمالي أنميات وقفتها:';
     } else if (activeCategory === 'english_series') {
@@ -102,20 +126,18 @@ function updateAllCounts(currentFilteredCount = 0) {
     bannerCount.innerText = currentFilteredCount;
 }
 
-// تحميل الداتا بطريقة ذكية تمنع اختفاء أي عنصر معدل أو مضاف يدوياً
 async function loadData() {
     try {
-        const response = await fetch('data.json');
+        // إضافة رقم عشوائي لمنع الموبايل من قراءة كاش قديم لملف data.json
+        const response = await fetch('data.json?v=' + new Date().getTime());
         const jsonData = await response.json();
         const localItems = JSON.parse(localStorage.getItem('my_added_watch_items')) || [];
         const deletedItems = JSON.parse(localStorage.getItem('my_deleted_watch_items')) || [];
         const statusOverrides = JSON.parse(localStorage.getItem('my_status_overrides')) || {};
         
-        // 1. نطبق أي تعديلات حالة (مكتمل/متوقف) محفوظة على داتا الـ JSON، ونستبعد المحذوفات من الـ JSON فقط
         const filteredJsonData = jsonData.filter(item => {
             const keyWithStatus = `${item.name}_${item.category}_${item.status || 'completed'}`;
             const oldKey = `${item.name}_${item.category}`;
-            // لو العنصر موجود في إضافاتك اليدوية، نتجاهل نسخة الـ JSON القديمة عشان منكرروش، ونخلي نسختك إنت اللي تظهر
             const existsInLocal = localItems.some(loc => normalizeText(loc.name) === normalizeText(item.name) && loc.category === item.category);
             if (existsInLocal) return false;
             return !deletedItems.includes(keyWithStatus) && !deletedItems.includes(oldKey);
@@ -127,7 +149,6 @@ async function loadData() {
             return item;
         });
 
-        // 2. إضافاتك اليدوية في localItems تظهر دايماً ومستحيل البلاك ليست تخفيها!
         allData = [...localItems, ...filteredJsonData];
         
         filterAndDisplay();
@@ -154,7 +175,6 @@ function filterAndDisplay() {
     displayItems(filteredData, false);
 }
 
-// نقل العمل فوراً بين (كملتها) و (وقفتها) بضغطة زرار بدون حذفه
 window.toggleItemStatus = function(encodedName, category) {
     const name = decodeURIComponent(encodedName);
     const targetItem = allData.find(item => item.name === name && item.category === category);
@@ -223,7 +243,6 @@ window.addNewItem = function() {
 
     if(!name) { alert('أرجوك اكتب اسم العمل الأول!'); return; }
 
-    // لو العمل ده كان ممسوح قبل كده في البلاك ليست، نشيله من البلاك ليست فوراً عشان يظهر وميختفيش
     let deletedItems = JSON.parse(localStorage.getItem('my_deleted_watch_items')) || [];
     deletedItems = deletedItems.filter(key => !key.startsWith(`${name}_${activeCategory}`));
     localStorage.setItem('my_deleted_watch_items', JSON.stringify(deletedItems));
@@ -268,7 +287,6 @@ window.addNewItem = function() {
     filterAndDisplay();
 }
 
-// زرار استرجاع كل الأعمال اللي اختفت بالغلط بسبب الحذف أو النقل
 window.restoreHiddenItems = function() {
     const deletedItems = JSON.parse(localStorage.getItem('my_deleted_watch_items')) || [];
     if (deletedItems.length === 0) {
@@ -282,7 +300,7 @@ window.restoreHiddenItems = function() {
     }
 };
 
-// زرار تحميل ملف data.json النهائي بكل تعديلاتك وتقييماتك وإضافاتك
+// تحميل ملف data.json شامل كل تعديلاتك
 window.exportFullDataJSON = function() {
     const finalExportData = allData.map(item => {
         const effRating = getEffectiveRating(item);
@@ -304,7 +322,40 @@ window.exportFullDataJSON = function() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    alert('تم تحميل ملف data.json الجديد بنجاح! 🎉\nالملف ده جواه كل إضافاتك (بما فيها السينما) وكل تقييماتك وتعديلاتك.\nانسخه وحطه مكان ملف data.json في الكود عندك عشان يثبت للأبد على أي جهاز!');
+    alert('تم تحميل ملف data.json الجديد بنجاح! 🎉\nارفع الملف ده مكان data.json على GitHub عشان يظهر على الموبايل وأي جهاز تاني فوراً، أو استخدم زرار "استيراد JSON" على موبايلك!');
+};
+
+// استيراد ملف data.json لمزامنة التعديلات بين اللاب والموبايل في ثانية
+window.importDataJSON = function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const importedData = JSON.parse(e.target.result);
+            if (!Array.isArray(importedData)) {
+                alert('الملف غير صالح!');
+                return;
+            }
+
+            // حفظ كل التقييمات والعناصر في ذاكرة الجهاز الحالي
+            importedData.forEach(item => {
+                if (item.myRating && item.myRating > 0) {
+                    localStorage.setItem('rating_' + item.name, item.myRating);
+                }
+            });
+
+            localStorage.setItem('my_added_watch_items', JSON.stringify(importedData));
+            localStorage.removeItem('my_deleted_watch_items');
+            allData = importedData;
+            filterAndDisplay();
+            alert('تم استيراد ومزامنة كل تعديلاتك وأفلامك بنجاح على هذا الجهاز! 🚀');
+        } catch (err) {
+            alert('حدث خطأ أثناء قراءة الملف!');
+        }
+    };
+    reader.readAsText(file);
 };
 
 window.saveMyRating = function(encodedName) {
@@ -476,7 +527,7 @@ async function displayItems(items, isFavView = false) {
         return;
     }
 
-    container.innerHTML = '<p style="text-align:center; width:100%; color:var(--lavender-accent); font-size:1.5em;">جاري تحميل البوسترات الأصلية... 🚀</p>';
+    container.innerHTML = '<p style="text-align:center; width:100%; color:var(--lavender-accent); font-size:1.3em;">جاري تحميل البوسترات الأصلية... 🚀</p>';
     
     const itemsWithRatings = items.map(item => {
         return { ...item, finalRating: getEffectiveRating(item) };
@@ -521,11 +572,11 @@ async function displayItems(items, isFavView = false) {
                     </div>
                     
                     <div class="my-rating-box" id="display_${safeId}">
-                        👤 تقييمي الشخصي: ⭐ ${displayRating}
+                        👤 تقييمي: ⭐ ${displayRating}
                     </div>
                     
                     <div class="user-rating-control">
-                        <input type="number" min="0" max="10" step="0.5" placeholder="تقييمك" id="input_${safeId}" value="${hasValidRating ? item.finalRating : ''}">
+                        <input type="number" min="0" max="10" step="0.5" placeholder="تقييم" id="input_${safeId}" value="${hasValidRating ? item.finalRating : ''}">
                         <button onclick="saveMyRating('${encodeURIComponent(item.name)}')">حفظ</button>
                     </div>
                 </div>
