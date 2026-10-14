@@ -2,6 +2,9 @@ const TMDB_API_KEY = 'f3cefc2462aadaabd61feafa4ec78ce4';
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
+// ☁️ لو معاك لينك Firebase Realtime Database حطه هنا بين علامتين التنصيص عشان يربط اللاب والموبايل أوتوماتيك للأبد:
+const DEFAULT_FIREBASE_URL = 'PUT_YOUR_FIREBASE_DB_URL_HERE';
+
 const container = document.getElementById('app-container');
 const buttons = document.querySelectorAll('.filter-btn');
 const favBtn = document.getElementById('fav-btn');
@@ -18,11 +21,16 @@ const cinemaLangSelect = document.getElementById('cinema-lang-select');
 const bannerTitle = document.getElementById('banner-title');
 const bannerCount = document.getElementById('banner-count');
 const installAppBtn = document.getElementById('install-app-btn');
+const cloudSyncBtn = document.getElementById('cloud-sync-btn');
+const cloudStatusText = document.getElementById('cloud-status-text');
 
 let allData = [];
+let baseJsonData = [];
 let activeCategory = 'arabic_series_2026';
 let activeSubFilter = 'completed';
 let deferredPrompt = null;
+let cloudSyncStream = null;
+let lastCloudSignature = '';
 
 const categoryNamesMap = {
     'arabic_series_2026': 'مسلسلات عربي',
@@ -33,7 +41,163 @@ const categoryNamesMap = {
     'cinema': 'سينما 🎟️'
 };
 
-// تفعيل زرار تثبيت الموقع كـ App على الموبايل والكمبيوتر
+// ==========================================
+// ☁️ نظام المزامنة السحابية اللحظية (Live Cloud Sync)
+// ==========================================
+function getCloudDbUrl() {
+    let url = localStorage.getItem('watchlog_firebase_url') || DEFAULT_FIREBASE_URL;
+    if (!url || url === 'PUT_YOUR_FIREBASE_DB_URL_HERE') return null;
+    url = url.trim().replace(/\/+$/, '');
+    if (!url.startsWith('http')) url = 'https://' + url;
+    return url;
+}
+
+function getLocalRatingsObject() {
+    const ratings = {};
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('rating_')) {
+            ratings[key] = localStorage.getItem(key);
+        }
+    }
+    return ratings;
+}
+
+function updateCloudBadgeUI(connected) {
+    if (!cloudSyncBtn || !cloudStatusText) return;
+    if (connected) {
+        cloudSyncBtn.classList.add('connected');
+        cloudStatusText.innerText = 'متصل بالسحابة (تزامن لحظي 🟢)';
+    } else {
+        cloudSyncBtn.classList.remove('connected');
+        cloudStatusText.innerText = 'ربط السحابة (مزامنة اللاب والموبايل)';
+    }
+}
+
+async function pushStateToCloud() {
+    const dbUrl = getCloudDbUrl();
+    if (!dbUrl) return;
+
+    const payload = {
+        addedItems: JSON.parse(localStorage.getItem('my_added_watch_items')) || [],
+        deletedItems: JSON.parse(localStorage.getItem('my_deleted_watch_items')) || [],
+        statusOverrides: JSON.parse(localStorage.getItem('my_status_overrides')) || {},
+        ratings: getLocalRatingsObject(),
+        updatedAt: Date.now()
+    };
+
+    lastCloudSignature = JSON.stringify({
+        a: payload.addedItems,
+        d: payload.deletedItems,
+        s: payload.statusOverrides,
+        r: payload.ratings
+    });
+
+    try {
+        await fetch(`${dbUrl}/watchlog_sync.json`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        updateCloudBadgeUI(true);
+    } catch (e) {
+        console.error('Cloud push error:', e);
+    }
+}
+
+function applyCloudStateLocally(cloudData) {
+    if (!cloudData) return false;
+
+    const incomingSig = JSON.stringify({
+        a: cloudData.addedItems || [],
+        d: cloudData.deletedItems || [],
+        s: cloudData.statusOverrides || {},
+        r: cloudData.ratings || {}
+    });
+
+    if (incomingSig === lastCloudSignature) return false;
+    lastCloudSignature = incomingSig;
+
+    localStorage.setItem('my_added_watch_items', JSON.stringify(cloudData.addedItems || []));
+    localStorage.setItem('my_deleted_watch_items', JSON.stringify(cloudData.deletedItems || []));
+    localStorage.setItem('my_status_overrides', JSON.stringify(cloudData.statusOverrides || {}));
+
+    if (cloudData.ratings) {
+        Object.keys(cloudData.ratings).forEach(k => {
+            localStorage.setItem(k, cloudData.ratings[k]);
+        });
+    }
+
+    rebuildAllDataAndRender();
+    return true;
+}
+
+async function initCloudSync() {
+    const dbUrl = getCloudDbUrl();
+    if (!dbUrl) {
+        updateCloudBadgeUI(false);
+        return;
+    }
+
+    try {
+        const res = await fetch(`${dbUrl}/watchlog_sync.json`);
+        const cloudData = await res.json();
+
+        const localAdded = JSON.parse(localStorage.getItem('my_added_watch_items')) || [];
+        const localRatings = getLocalRatingsObject();
+
+        if (!cloudData && (localAdded.length > 0 || Object.keys(localRatings).length > 0)) {
+            await pushStateToCloud();
+        } else if (cloudData) {
+            applyCloudStateLocally(cloudData);
+        }
+        updateCloudBadgeUI(true);
+
+        if (window.EventSource && !cloudSyncStream) {
+            cloudSyncStream = new EventSource(`${dbUrl}/watchlog_sync.json`);
+            cloudSyncStream.addEventListener('put', (e) => {
+                try {
+                    const packet = JSON.parse(e.data);
+                    if (packet.path === '/' && packet.data) {
+                        applyCloudStateLocally(packet.data);
+                    } else {
+                        fetch(`${dbUrl}/watchlog_sync.json`).then(r => r.json()).then(d => applyCloudStateLocally(d));
+                    }
+                } catch (err) {}
+            });
+        }
+    } catch (e) {
+        console.error('Cloud init error:', e);
+        updateCloudBadgeUI(false);
+    }
+}
+
+window.setupCloudSync = async function() {
+    const currentUrl = getCloudDbUrl() || '';
+    const inputUrl = prompt(
+        '☁️ للمزامنة اللحظية التلقائية بين اللاب والموبايل:\n\nانسخ رابط Firebase Realtime Database بتاعك وحطه هنا (مثال: https://my-watch-log-default-rtdb.firebaseio.com):\n\n(لو عايز تفصل السحابة امسح الرابط ودوس OK)',
+        currentUrl
+    );
+
+    if (inputUrl === null) return;
+
+    const cleaned = inputUrl.trim();
+    if (!cleaned) {
+        localStorage.removeItem('watchlog_firebase_url');
+        if (cloudSyncStream) { cloudSyncStream.close(); cloudSyncStream = null; }
+        updateCloudBadgeUI(false);
+        alert('تم فصل المزامنة السحابية.');
+        return;
+    }
+
+    localStorage.setItem('watchlog_firebase_url', cleaned);
+    if (cloudSyncStream) { cloudSyncStream.close(); cloudSyncStream = null; }
+    await initCloudSync();
+    alert('تم ربط السحابة بنجاح! 🎉\nدلوقتي حط نفس الرابط ده على جهازك التاني (الموبايل أو اللاب)، وأي تعديل هتعمله هنا هيسمّع هناك في نفس الثانية تلقائياً!');
+};
+
+// ==========================================
+
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
@@ -50,7 +214,7 @@ if (installAppBtn) {
             }
             deferredPrompt = null;
         } else {
-            alert('لتثبيت التطبيق على موبايلك:\n- في أندرويد (Chrome): اضغط على الثلاث نقاط فوق واختار "الإضافة إلى الشاشة الرئيسية / Install App".\n- في آيفون (Safari): اضغط على زر المشاركة (Share) واختار "Add to Home Screen".');
+            alert('لتثبيت التطبيق على موبايلك:\n- في أندرويد (Chrome): اضغط على الثلاث نقاط فوق واختار "تثبيت التطبيق / Install App".\n- في آيفون (Safari): اضغط على زر المشاركة (Share) واختار "Add to Home Screen".');
         }
     });
 }
@@ -97,7 +261,8 @@ function updateAllCounts(currentFilteredCount = 0) {
         badge.innerText = count;
     });
 
-    const favCount = allData.filter(item => getEffectiveRating(item) >= 9).length;
+    // ✅ استبعاد قسم السينما تماماً من عداد المفضلة
+    const favCount = allData.filter(item => item.category !== 'cinema' && getEffectiveRating(item) >= 9).length;
     if (favCountBadge) favCountBadge.innerText = favCount;
 
     if (activeCategory === 'anime' || activeCategory === 'english_series') {
@@ -126,32 +291,35 @@ function updateAllCounts(currentFilteredCount = 0) {
     bannerCount.innerText = currentFilteredCount;
 }
 
+function rebuildAllDataAndRender() {
+    const localItems = JSON.parse(localStorage.getItem('my_added_watch_items')) || [];
+    const deletedItems = JSON.parse(localStorage.getItem('my_deleted_watch_items')) || [];
+    const statusOverrides = JSON.parse(localStorage.getItem('my_status_overrides')) || {};
+    
+    const filteredJsonData = baseJsonData.filter(item => {
+        const keyWithStatus = `${item.name}_${item.category}_${item.status || 'completed'}`;
+        const oldKey = `${item.name}_${item.category}`;
+        const existsInLocal = localItems.some(loc => normalizeText(loc.name) === normalizeText(item.name) && loc.category === item.category);
+        if (existsInLocal) return false;
+        return !deletedItems.includes(keyWithStatus) && !deletedItems.includes(oldKey);
+    }).map(item => {
+        const overrideKey = `${item.name}_${item.category}`;
+        if (statusOverrides[overrideKey]) {
+            return { ...item, ...statusOverrides[overrideKey] };
+        }
+        return item;
+    });
+
+    allData = [...localItems, ...filteredJsonData];
+    filterAndDisplay();
+}
+
 async function loadData() {
     try {
-        // إضافة رقم عشوائي لمنع الموبايل من قراءة كاش قديم لملف data.json
         const response = await fetch('data.json?v=' + new Date().getTime());
-        const jsonData = await response.json();
-        const localItems = JSON.parse(localStorage.getItem('my_added_watch_items')) || [];
-        const deletedItems = JSON.parse(localStorage.getItem('my_deleted_watch_items')) || [];
-        const statusOverrides = JSON.parse(localStorage.getItem('my_status_overrides')) || {};
-        
-        const filteredJsonData = jsonData.filter(item => {
-            const keyWithStatus = `${item.name}_${item.category}_${item.status || 'completed'}`;
-            const oldKey = `${item.name}_${item.category}`;
-            const existsInLocal = localItems.some(loc => normalizeText(loc.name) === normalizeText(item.name) && loc.category === item.category);
-            if (existsInLocal) return false;
-            return !deletedItems.includes(keyWithStatus) && !deletedItems.includes(oldKey);
-        }).map(item => {
-            const overrideKey = `${item.name}_${item.category}`;
-            if (statusOverrides[overrideKey]) {
-                return { ...item, ...statusOverrides[overrideKey] };
-            }
-            return item;
-        });
-
-        allData = [...localItems, ...filteredJsonData];
-        
-        filterAndDisplay();
+        baseJsonData = await response.json();
+        rebuildAllDataAndRender();
+        await initCloudSync();
     } catch (error) {
         console.error('Error loading data:', error);
     }
@@ -159,7 +327,8 @@ async function loadData() {
 
 function filterAndDisplay() {
     if (activeCategory === 'favorites') {
-        const favData = allData.filter(item => getEffectiveRating(item) >= 9);
+        // ✅ استبعاد قسم السينما نهائياً من الدخول في قائمة المفضلة
+        const favData = allData.filter(item => item.category !== 'cinema' && getEffectiveRating(item) >= 9);
         updateAllCounts(favData.length);
         displayItems(favData, true);
         return;
@@ -210,6 +379,7 @@ window.toggleItemStatus = function(encodedName, category) {
     }
 
     filterAndDisplay();
+    pushStateToCloud();
 };
 
 window.deleteItem = function(encodedName, category) {
@@ -232,6 +402,7 @@ window.deleteItem = function(encodedName, category) {
 
     allData = allData.filter(item => !(item.name === name && item.category === category));
     filterAndDisplay();
+    pushStateToCloud();
 }
 
 window.addNewItem = function() {
@@ -256,7 +427,6 @@ window.addNewItem = function() {
         status: status,
         stoppedAt: status === 'dropped' ? stoppedAt : "",
         myRating: myRating ? parseFloat(myRating) : 0,
-        year_watched: new Date().getFullYear(),
         lang: activeCategory === 'cinema' ? cinemaLang : null
     };
 
@@ -285,6 +455,7 @@ window.addNewItem = function() {
     }
 
     filterAndDisplay();
+    pushStateToCloud();
 }
 
 window.restoreHiddenItems = function() {
@@ -295,12 +466,12 @@ window.restoreHiddenItems = function() {
     }
     if (confirm(`لقينا (${deletedItems.length}) عمل مخفي في قائمة المحذوفات:\n(${deletedItems.join(' ، ')})\n\nهل عايز تسترجعهم كلهم دلوقتي؟`)) {
         localStorage.removeItem('my_deleted_watch_items');
-        loadData();
-        alert('تم استرجاع كل الأعمال المخفية بنجاح! راجع أقسامك دلوقتي.');
+        rebuildAllDataAndRender();
+        pushStateToCloud();
+        alert('تم استرجاع كل الأعمال المخفية بنجاح!');
     }
 };
 
-// تحميل ملف data.json شامل كل تعديلاتك
 window.exportFullDataJSON = function() {
     const finalExportData = allData.map(item => {
         const effRating = getEffectiveRating(item);
@@ -321,11 +492,8 @@ window.exportFullDataJSON = function() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-
-    alert('تم تحميل ملف data.json الجديد بنجاح! 🎉\nارفع الملف ده مكان data.json على GitHub عشان يظهر على الموبايل وأي جهاز تاني فوراً، أو استخدم زرار "استيراد JSON" على موبايلك!');
 };
 
-// استيراد ملف data.json لمزامنة التعديلات بين اللاب والموبايل في ثانية
 window.importDataJSON = function(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -339,7 +507,6 @@ window.importDataJSON = function(event) {
                 return;
             }
 
-            // حفظ كل التقييمات والعناصر في ذاكرة الجهاز الحالي
             importedData.forEach(item => {
                 if (item.myRating && item.myRating > 0) {
                     localStorage.setItem('rating_' + item.name, item.myRating);
@@ -350,7 +517,8 @@ window.importDataJSON = function(event) {
             localStorage.removeItem('my_deleted_watch_items');
             allData = importedData;
             filterAndDisplay();
-            alert('تم استيراد ومزامنة كل تعديلاتك وأفلامك بنجاح على هذا الجهاز! 🚀');
+            pushStateToCloud();
+            alert('تم استيراد ومزامنة كل تعديلاتك وأفلامك بنجاح! 🚀');
         } catch (err) {
             alert('حدث خطأ أثناء قراءة الملف!');
         }
@@ -371,7 +539,15 @@ window.saveMyRating = function(encodedName) {
         }
         localStorage.setItem('rating_' + name, val);
         filterAndDisplay();
+        pushStateToCloud();
     }
+}
+
+// دالة استخراج سنة الإصدار الحقيقية من تاريخ TMDB
+function extractYearFromDate(dateStr) {
+    if (!dateStr || typeof dateStr !== 'string') return '';
+    const year = dateStr.substring(0, 4);
+    return /^\d{4}$/.test(year) ? year : '';
 }
 
 async function fetchSmartTMDBData(item) {
@@ -383,6 +559,7 @@ async function fetchSmartTMDBData(item) {
     let globalRating = null;
     let apiSeasons = '';
     let apiEpisodes = '';
+    let actualReleaseYear = item.release_year ? item.release_year.toString() : '';
     let matchedId = item.tmdb_id || null;
 
     if (matchedId) {
@@ -392,6 +569,10 @@ async function fetchSmartTMDBData(item) {
             const directData = await directRes.json();
             if (directData.poster_path) posterUrl = IMG_BASE_URL + directData.poster_path;
             if (directData.vote_average && directData.vote_average > 0) globalRating = directData.vote_average.toFixed(1);
+            
+            const dateStr = directData.first_air_date || directData.release_date || '';
+            if (dateStr) actualReleaseYear = extractYearFromDate(dateStr);
+
             if (isTV) {
                 if (directData.number_of_seasons) apiSeasons = directData.number_of_seasons;
                 if (directData.number_of_episodes) apiEpisodes = directData.number_of_episodes;
@@ -435,6 +616,8 @@ async function fetchSmartTMDBData(item) {
                             const existing = uniqueMap.get(r.id);
                             if (!existing.poster_path && r.poster_path) existing.poster_path = r.poster_path;
                             if ((!existing.vote_average || existing.vote_average === 0) && r.vote_average > 0) existing.vote_average = r.vote_average;
+                            if (!existing.release_date && r.release_date) existing.release_date = r.release_date;
+                            if (!existing.first_air_date && r.first_air_date) existing.first_air_date = r.first_air_date;
                         }
                     }
                     resultsList = Array.from(uniqueMap.values());
@@ -481,6 +664,8 @@ async function fetchSmartTMDBData(item) {
             matchedId = bestMatch.id;
             if (bestMatch.poster_path) posterUrl = IMG_BASE_URL + bestMatch.poster_path;
             if (bestMatch.vote_average && bestMatch.vote_average > 0) globalRating = bestMatch.vote_average.toFixed(1);
+            const matchDate = bestMatch.first_air_date || bestMatch.release_date || '';
+            if (matchDate) actualReleaseYear = extractYearFromDate(matchDate);
         }
     }
 
@@ -498,6 +683,10 @@ async function fetchSmartTMDBData(item) {
             if (!globalRating && details.vote_average && details.vote_average > 0) {
                 globalRating = details.vote_average.toFixed(1);
             }
+            if (!actualReleaseYear) {
+                const detailDate = details.first_air_date || details.release_date || '';
+                if (detailDate) actualReleaseYear = extractYearFromDate(detailDate);
+            }
             if (!posterUrl) {
                 if (details.poster_path) {
                     posterUrl = IMG_BASE_URL + details.poster_path;
@@ -510,11 +699,17 @@ async function fetchSmartTMDBData(item) {
         } catch(e) { console.error(e); }
     }
 
+    // لو العمل لسه جديد في 2026 ومفيش تاريخ متسجل على TMDB، نعرض سنة الإصدار المتوقعة
+    if (!actualReleaseYear && (item.category.includes('2026') || item.modern_only)) {
+        actualReleaseYear = '2026';
+    }
+
     return {
         posterUrl: posterUrl || `https://placehold.co/500x750/1a1a24/b095f6?text=${encodeURIComponent(item.name)}`,
         globalRating: globalRating || item.fallback_imdb || '7.5',
         apiSeasons: apiSeasons || item.seasons || '',
-        apiEpisodes: apiEpisodes || item.episodes || ''
+        apiEpisodes: apiEpisodes || item.episodes || '',
+        releaseYear: actualReleaseYear
     };
 }
 
@@ -527,7 +722,7 @@ async function displayItems(items, isFavView = false) {
         return;
     }
 
-    container.innerHTML = '<p style="text-align:center; width:100%; color:var(--lavender-accent); font-size:1.3em;">جاري تحميل البوسترات الأصلية... 🚀</p>';
+    container.innerHTML = '<p style="text-align:center; width:100%; color:var(--lavender-accent); font-size:1.3em;">جاري تحميل البوسترات الأصلية وسنوات الإصدار... 🚀</p>';
     
     const itemsWithRatings = items.map(item => {
         return { ...item, finalRating: getEffectiveRating(item) };
@@ -565,7 +760,7 @@ async function displayItems(items, isFavView = false) {
                     
                     <div class="meta-info">
                         ${isFavView ? `<span class="meta-tag cat-tag">📌 ${categoryNamesMap[item.category] || item.category}</span>` : ''}
-                        ${item.year_watched ? `<span class="meta-tag">📅 ${item.year_watched}</span>` : ''}
+                        ${tmdbInfo.releaseYear ? `<span class="meta-tag" title="سنة الإصدار">📅 ${tmdbInfo.releaseYear}</span>` : ''}
                         ${tmdbInfo.apiSeasons ? `<span class="meta-tag">📺 المواسم: ${tmdbInfo.apiSeasons}</span>` : ''}
                         ${tmdbInfo.apiEpisodes ? `<span class="meta-tag">🎞️ الحلقات: ${tmdbInfo.apiEpisodes}</span>` : ''}
                         <span class="meta-tag imdb-tag">🌍 IMDb: ⭐ ${tmdbInfo.globalRating}</span>
