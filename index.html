@@ -7,79 +7,180 @@
     
     <!-- إعدادات تحويل الموقع إلى تطبيق موبايل مستقل (PWA) -->
     <link rel="manifest" id="my-manifest" href="manifest.json">
-    <meta name="theme-color" content="#1a1a24">
+    <meta name="theme-color" content="#120e1f">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="WatchLog">
     
-    <!-- أيقونة واضحة جداً للتاب والموبايل (بتتحدث تلقائياً لـ PNG عالية الجودة) -->
+    <!-- أيقونة التاب والموبايل (بتتولد تلقائياً بتصميم سينمائي 3D فخم) -->
     <link rel="icon" id="dynamic-favicon" type="image/png" href="">
     <link rel="apple-touch-icon" id="dynamic-apple-icon" href="">
 
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 
-    <!-- سكريبت توليد أيقونة PNG احترافية وواضحة جداً + تفعيل الـ App الحقيقي -->
+    <!-- سكريبت رسم وتوليد اللوجو السينمائي الاحترافي (3D Cinema Clapperboard & Neon Play) -->
     <script>
-        (function generateClearAppIcons() {
-            function createIcon(size) {
+        (function generatePremiumCinemaIcon() {
+            function createCinemaIcon(size) {
                 const canvas = document.createElement('canvas');
                 canvas.width = size;
                 canvas.height = size;
                 const ctx = canvas.getContext('2d');
+                const s = size / 512; // معامل القياس لضمان أعلى دقة
 
-                // خلفية داكنة فخمة بحواف دائرية
-                const grad = ctx.createLinearGradient(0, 0, size, size);
-                grad.addColorStop(0, '#1e1b2e');
-                grad.addColorStop(1, '#0a0a0f');
-                ctx.fillStyle = grad;
+                ctx.save();
+                ctx.scale(s, s);
+
+                // 1. الخلفية الفخمة (تدرج ليلي سينمائي عميق)
+                const bgGrad = ctx.createRadialGradient(256, 200, 30, 256, 256, 360);
+                bgGrad.addColorStop(0, '#2a1f4a');
+                bgGrad.addColorStop(0.6, '#130f24');
+                bgGrad.addColorStop(1, '#07050f');
+                ctx.fillStyle = bgGrad;
+                ctx.fillRect(0, 0, 512, 512);
+
+                // 2. هالة نيون خلفية ناعمة في المنتصف (Safe Zone)
+                const glowGrad = ctx.createRadialGradient(256, 265, 10, 256, 265, 180);
+                glowGrad.addColorStop(0, 'rgba(176, 149, 246, 0.35)');
+                glowGrad.addColorStop(1, 'rgba(176, 149, 246, 0)');
+                ctx.fillStyle = glowGrad;
                 ctx.beginPath();
-                ctx.roundRect(0, 0, size, size, size * 0.22);
+                ctx.arc(256, 265, 180, 0, Math.PI * 2);
                 ctx.fill();
 
-                // إطار لافندر مضيء وواضح
-                ctx.strokeStyle = '#b095f6';
-                ctx.lineWidth = size * 0.05;
+                // 3. رسم بكرتين السينما العلويتين (Film Reels) بتصميم الماسك الأصلي المحسن
+                function drawReel(cx, cy, radius) {
+                    ctx.save();
+                    ctx.shadowColor = 'rgba(176, 149, 246, 0.6)';
+                    ctx.shadowBlur = 15;
+                    
+                    const reelGrad = ctx.createLinearGradient(cx - radius, cy - radius, cx + radius, cy + radius);
+                    reelGrad.addColorStop(0, '#d4c2ff');
+                    reelGrad.addColorStop(1, '#7b5cd6');
+                    
+                    ctx.fillStyle = reelGrad;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // التجويف الداخلي للبكرة
+                    ctx.shadowBlur = 0;
+                    ctx.fillStyle = '#130f24';
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, radius * 0.32, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // فتحات بكرة السينما الدائرية
+                    for (let i = 0; i < 4; i++) {
+                        const angle = (i * Math.PI) / 2 + Math.PI / 4;
+                        const hx = cx + Math.cos(angle) * (radius * 0.64);
+                        const hy = cy + Math.sin(angle) * (radius * 0.64);
+                        ctx.beginPath();
+                        ctx.arc(hx, hy, radius * 0.17, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    ctx.restore();
+                }
+
+                // وضع البكرتين في منطقة آمنة تماماً من القص الدائري
+                drawReel(188, 165, 48);
+                drawReel(324, 165, 48);
+
+                // 4. جسم الكاميرا / الشاشة السينمائية (Clapperboard / Screen Body)
+                ctx.save();
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
+                ctx.shadowBlur = 28;
+                ctx.shadowOffsetY = 12;
+
+                const bodyGrad = ctx.createLinearGradient(126, 215, 386, 375);
+                bodyGrad.addColorStop(0, '#251e3e');
+                bodyGrad.addColorStop(1, '#120e21');
+                ctx.fillStyle = bodyGrad;
+                ctx.beginPath();
+                ctx.roundRect(126, 215, 260, 155, 36);
+                ctx.fill();
+
+                // إطار نيون لافندر متوهج حول الشاشة
+                ctx.shadowColor = '#b095f6';
+                ctx.shadowBlur = 18;
+                ctx.shadowOffsetY = 0;
+                const borderGrad = ctx.createLinearGradient(126, 215, 386, 370);
+                borderGrad.addColorStop(0, '#e2d4ff');
+                borderGrad.addColorStop(0.5, '#b095f6');
+                borderGrad.addColorStop(1, '#6a49c4');
+                ctx.strokeStyle = borderGrad;
+                ctx.lineWidth = 10;
+                ctx.stroke();
+                ctx.restore();
+
+                // 5. شريط الكلاكيت العلوي المزخرف (Clapperboard Stripes)
+                ctx.save();
+                ctx.beginPath();
+                ctx.roundRect(131, 220, 250, 32, [30, 30, 0, 0]);
+                ctx.clip();
+
+                ctx.fillStyle = 'rgba(176, 149, 246, 0.15)';
+                ctx.fillRect(131, 220, 250, 32);
+
+                ctx.fillStyle = '#b095f6';
+                for (let x = 115; x < 390; x += 45) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 252);
+                    ctx.lineTo(x + 20, 220);
+                    ctx.lineTo(x + 38, 220);
+                    ctx.lineTo(x + 18, 252);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+                ctx.restore();
+
+                // خط فاصل تحت الكلاكيت
+                ctx.strokeStyle = 'rgba(176, 149, 246, 0.4)';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(131, 252);
+                ctx.lineTo(381, 252);
                 ctx.stroke();
 
-                // دائرة سينما خلفية خفيفة
-                ctx.fillStyle = 'rgba(176, 149, 246, 0.15)';
-                ctx.beginPath();
-                ctx.arc(size / 2, size * 0.44, size * 0.26, 0, Math.PI * 2);
-                ctx.fill();
+                // 6. مثلث التشغيل الذهبي/الأبيض ثلاثي الأبعاد في قلب الشاشة
+                ctx.save();
+                ctx.shadowColor = 'rgba(255, 215, 0, 0.65)';
+                ctx.shadowBlur = 22;
 
-                // علامة Play كبيرة وواضحة جداً في المنتصف باللون اللافندر والأبيض
-                ctx.shadowColor = '#b095f6';
-                ctx.shadowBlur = size * 0.06;
-                ctx.fillStyle = '#b095f6';
+                const playGrad = ctx.createLinearGradient(225, 270, 295, 345);
+                playGrad.addColorStop(0, '#ffffff');
+                playGrad.addColorStop(0.4, '#ffe57f');
+                playGrad.addColorStop(1, '#ffab00');
+
+                ctx.fillStyle = playGrad;
+                ctx.strokeStyle = playGrad;
+                ctx.lineJoin = 'round';
+                ctx.lineWidth = 12;
+
                 ctx.beginPath();
-                ctx.moveTo(size * 0.38, size * 0.26);
-                ctx.lineTo(size * 0.38, size * 0.62);
-                ctx.lineTo(size * 0.70, size * 0.44);
+                ctx.moveTo(234, 278);
+                ctx.lineTo(234, 338);
+                ctx.lineTo(288, 308);
                 ctx.closePath();
                 ctx.fill();
+                ctx.stroke();
+                ctx.restore();
 
-                // قلب صغير أحمر أو نجمة ذهبية فوق
-                ctx.shadowBlur = 0;
-                ctx.fillStyle = '#ffd700';
-                ctx.font = `900 ${size * 0.16}px Arial`;
-                ctx.textAlign = 'center';
-                ctx.fillText('★ WL', size / 2, size * 0.85);
-
+                ctx.restore();
                 return canvas.toDataURL('image/png');
             }
 
             window.addEventListener('DOMContentLoaded', () => {
-                const icon192 = createIcon(192);
-                const icon512 = createIcon(512);
+                const icon192 = createCinemaIcon(192);
+                const icon512 = createCinemaIcon(512);
 
                 document.getElementById('dynamic-favicon').href = icon192;
                 document.getElementById('dynamic-apple-icon').href = icon512;
 
-                // ربط الأيقونات الـ PNG بالـ Manifest عشان ينزل كـ App رسمي بدون علامة كروم
                 const dynamicManifest = {
-                    "id": "/watchlog-pwa",
+                    "id": "/watchlog-pwa-v2",
                     "name": "My Watch Log",
                     "short_name": "WatchLog",
                     "description": "الأرشيف الشخصي للأفلام والمسلسلات والأنمي",
@@ -87,17 +188,17 @@
                     "scope": window.location.origin + "/",
                     "display": "standalone",
                     "background_color": "#0a0a0a",
-                    "theme_color": "#1a1a24",
+                    "theme_color": "#120e1f",
                     "orientation": "portrait-primary",
                     "icons": [
-                        { "src": icon192, "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-                        { "src": icon512, "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+                        { "src": icon192, "sizes": "192x192", "type": "image/png", "purpose": "any" },
+                        { "src": icon512, "sizes": "512x512", "type": "image/png", "purpose": "any" },
+                        { "src": icon512, "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
                     ]
                 };
                 const blob = new Blob([JSON.stringify(dynamicManifest)], { type: 'application/json' });
                 document.getElementById('my-manifest').href = URL.createObjectURL(blob);
 
-                // تسجيل الـ Service Worker الإجباري لتحويله من Shortcut إلى App
                 if ('serviceWorker' in navigator) {
                     navigator.serviceWorker.register('sw.js').catch(err => console.log('SW:', err));
                 }
@@ -134,12 +235,37 @@
             </button>
         </div>
 
-        <!-- لوجو الهيدر الجديد الواضح جداً -->
+        <!-- اللوجو السينمائي الفيكتور الفخم بجوار العنوان -->
         <div class="logo-container">
-            <div class="clear-logo-badge">
-                <span class="play-triangle">▶</span>
-                <span class="wl-text">WL</span>
-            </div>
+            <svg class="main-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#251e3e"/>
+                        <stop offset="100%" stop-color="#0d0a18"/>
+                    </linearGradient>
+                    <linearGradient id="lavGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#e2d4ff"/>
+                        <stop offset="50%" stop-color="#b095f6"/>
+                        <stop offset="100%" stop-color="#7b5cd6"/>
+                    </linearGradient>
+                    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#ffffff"/>
+                        <stop offset="50%" stop-color="#ffe57f"/>
+                        <stop offset="100%" stop-color="#ffab00"/>
+                    </linearGradient>
+                </defs>
+                <rect width="92" height="92" x="4" y="4" rx="22" fill="url(#bgGrad)" stroke="url(#lavGrad)" stroke-width="4"/>
+                <!-- بكرات السينما -->
+                <circle cx="34" cy="27" r="11" fill="url(#lavGrad)"/>
+                <circle cx="34" cy="27" r="4" fill="#130f24"/>
+                <circle cx="66" cy="27" r="11" fill="url(#lavGrad)"/>
+                <circle cx="66" cy="27" r="4" fill="#130f24"/>
+                <!-- شاشة العرض والكلاكيت -->
+                <rect x="20" y="42" width="60" height="38" rx="9" fill="#120e21" stroke="url(#lavGrad)" stroke-width="3.5"/>
+                <line x1="20" y1="51" x2="80" y2="51" stroke="#b095f6" stroke-width="2" stroke-opacity="0.5"/>
+                <!-- مثلث التشغيل الذهبي -->
+                <polygon points="43,56 43,72 60,64" fill="url(#goldGrad)"/>
+            </svg>
             <h1>My Watch Log</h1>
         </div>
         <p>الأرشيف الشخصي للأفلام والمسلسلات والأنمي</p>
