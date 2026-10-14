@@ -5,28 +5,113 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>My Watch Log</title>
     
-    <!-- إعدادات تحويل الموقع إلى تطبيق موبايل (PWA) -->
-    <link rel="manifest" href="manifest.json">
+    <!-- إعدادات تحويل الموقع إلى تطبيق موبايل مستقل (PWA) -->
+    <link rel="manifest" id="my-manifest" href="manifest.json">
     <meta name="theme-color" content="#1a1a24">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="WatchLog">
     
-    <!-- لوجو التاب والأيقونة على الموبايل -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231a1a24' stroke='%23b095f6' stroke-width='6'/><circle cx='32' cy='32' r='10' fill='%23b095f6'/><circle cx='68' cy='32' r='10' fill='%23b095f6'/><path d='M25 58 Q50 82 75 58' stroke='%23b095f6' stroke-width='7' fill='none' stroke-linecap='round'/><polygon points='44,42 44,58 60,50' fill='%23ffffff'/></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231a1a24' stroke='%23b095f6' stroke-width='6'/><circle cx='32' cy='32' r='10' fill='%23b095f6'/><circle cx='68' cy='32' r='10' fill='%23b095f6'/><path d='M25 58 Q50 82 75 58' stroke='%23b095f6' stroke-width='7' fill='none' stroke-linecap='round'/><polygon points='44,42 44,58 60,50' fill='%23ffffff'/></svg>">
+    <!-- أيقونة واضحة جداً للتاب والموبايل (بتتحدث تلقائياً لـ PNG عالية الجودة) -->
+    <link rel="icon" id="dynamic-favicon" type="image/png" href="">
+    <link rel="apple-touch-icon" id="dynamic-apple-icon" href="">
 
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+    <!-- سكريبت توليد أيقونة PNG احترافية وواضحة جداً + تفعيل الـ App الحقيقي -->
+    <script>
+        (function generateClearAppIcons() {
+            function createIcon(size) {
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+
+                // خلفية داكنة فخمة بحواف دائرية
+                const grad = ctx.createLinearGradient(0, 0, size, size);
+                grad.addColorStop(0, '#1e1b2e');
+                grad.addColorStop(1, '#0a0a0f');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.roundRect(0, 0, size, size, size * 0.22);
+                ctx.fill();
+
+                // إطار لافندر مضيء وواضح
+                ctx.strokeStyle = '#b095f6';
+                ctx.lineWidth = size * 0.05;
+                ctx.stroke();
+
+                // دائرة سينما خلفية خفيفة
+                ctx.fillStyle = 'rgba(176, 149, 246, 0.15)';
+                ctx.beginPath();
+                ctx.arc(size / 2, size * 0.44, size * 0.26, 0, Math.PI * 2);
+                ctx.fill();
+
+                // علامة Play كبيرة وواضحة جداً في المنتصف باللون اللافندر والأبيض
+                ctx.shadowColor = '#b095f6';
+                ctx.shadowBlur = size * 0.06;
+                ctx.fillStyle = '#b095f6';
+                ctx.beginPath();
+                ctx.moveTo(size * 0.38, size * 0.26);
+                ctx.lineTo(size * 0.38, size * 0.62);
+                ctx.lineTo(size * 0.70, size * 0.44);
+                ctx.closePath();
+                ctx.fill();
+
+                // قلب صغير أحمر أو نجمة ذهبية فوق
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#ffd700';
+                ctx.font = `900 ${size * 0.16}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.fillText('★ WL', size / 2, size * 0.85);
+
+                return canvas.toDataURL('image/png');
+            }
+
+            window.addEventListener('DOMContentLoaded', () => {
+                const icon192 = createIcon(192);
+                const icon512 = createIcon(512);
+
+                document.getElementById('dynamic-favicon').href = icon192;
+                document.getElementById('dynamic-apple-icon').href = icon512;
+
+                // ربط الأيقونات الـ PNG بالـ Manifest عشان ينزل كـ App رسمي بدون علامة كروم
+                const dynamicManifest = {
+                    "id": "/watchlog-pwa",
+                    "name": "My Watch Log",
+                    "short_name": "WatchLog",
+                    "description": "الأرشيف الشخصي للأفلام والمسلسلات والأنمي",
+                    "start_url": window.location.origin + window.location.pathname,
+                    "scope": window.location.origin + "/",
+                    "display": "standalone",
+                    "background_color": "#0a0a0a",
+                    "theme_color": "#1a1a24",
+                    "orientation": "portrait-primary",
+                    "icons": [
+                        { "src": icon192, "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+                        { "src": icon512, "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+                    ]
+                };
+                const blob = new Blob([JSON.stringify(dynamicManifest)], { type: 'application/json' });
+                document.getElementById('my-manifest').href = URL.createObjectURL(blob);
+
+                // تسجيل الـ Service Worker الإجباري لتحويله من Shortcut إلى App
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW:', err));
+                }
+            });
+        })();
+    </script>
 </head>
 <body>
     <header>
-        <!-- الشريط العلوي للأدوات والمفضلة (مرتب للموبايل واللابتوب) -->
+        <!-- الشريط العلوي للأدوات والمفضلة -->
         <div class="top-bar">
-            <!-- أزرار الداتا والتثبيت -->
             <div class="data-actions-bar">
                 <button id="install-app-btn" class="action-header-btn install-btn" style="display: none;" title="تثبيت التطبيق على جهازك">
-                    📲 تثبيت كـ App
+                    📲 تثبيت كـ App رسمي
                 </button>
                 <button onclick="exportFullDataJSON()" class="action-header-btn save-json-btn" title="تحميل ملف data.json بكل تعديلاتك">
                     💾 حفظ JSON
@@ -40,7 +125,6 @@
                 </button>
             </div>
 
-            <!-- زرار المفضلة -->
             <button id="fav-btn" class="fav-header-btn" title="الأعمال المفضلة (تقييم 9 و 10)">
                 <svg viewBox="0 0 24 24" class="heart-icon">
                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -50,14 +134,12 @@
             </button>
         </div>
 
+        <!-- لوجو الهيدر الجديد الواضح جداً -->
         <div class="logo-container">
-            <svg class="main-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <rect width="100" height="100" rx="22" fill="#1a1a24" stroke="#b095f6" stroke-width="5"/>
-                <circle cx="32" cy="30" r="9" fill="#b095f6"/>
-                <circle cx="68" cy="30" r="9" fill="#b095f6"/>
-                <rect x="22" y="45" width="56" height="34" rx="8" fill="#0a0a0a" stroke="#b095f6" stroke-width="4"/>
-                <polygon points="43,53 43,71 61,62" fill="#b095f6"/>
-            </svg>
+            <div class="clear-logo-badge">
+                <span class="play-triangle">▶</span>
+                <span class="wl-text">WL</span>
+            </div>
             <h1>My Watch Log</h1>
         </div>
         <p>الأرشيف الشخصي للأفلام والمسلسلات والأنمي</p>
