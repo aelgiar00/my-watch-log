@@ -2,31 +2,51 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>My Watch Log</title>
-    <!-- لوجو التاب (Favicon) -->
+    
+    <!-- إعدادات تحويل الموقع إلى تطبيق موبايل (PWA) -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a24">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="WatchLog">
+    
+    <!-- لوجو التاب والأيقونة على الموبايل -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231a1a24' stroke='%23b095f6' stroke-width='6'/><circle cx='32' cy='32' r='10' fill='%23b095f6'/><circle cx='68' cy='32' r='10' fill='%23b095f6'/><path d='M25 58 Q50 82 75 58' stroke='%23b095f6' stroke-width='7' fill='none' stroke-linecap='round'/><polygon points='44,42 44,58 60,50' fill='%23ffffff'/></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231a1a24' stroke='%23b095f6' stroke-width='6'/><circle cx='32' cy='32' r='10' fill='%23b095f6'/><circle cx='68' cy='32' r='10' fill='%23b095f6'/><path d='M25 58 Q50 82 75 58' stroke='%23b095f6' stroke-width='7' fill='none' stroke-linecap='round'/><polygon points='44,42 44,58 60,50' fill='%23ffffff'/></svg>">
+
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <!-- زرار المفضلة أقصى الشمال -->
-        <button id="fav-btn" class="fav-header-btn" title="الأعمال المفضلة (تقييم 9 و 10)">
-            <svg viewBox="0 0 24 24" class="heart-icon">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-            <span class="btn-label">المفضلة (Top)</span>
-            <span id="fav-count-badge" class="btn-count">0</span>
-        </button>
+        <!-- الشريط العلوي للأدوات والمفضلة (مرتب للموبايل واللابتوب) -->
+        <div class="top-bar">
+            <!-- أزرار الداتا والتثبيت -->
+            <div class="data-actions-bar">
+                <button id="install-app-btn" class="action-header-btn install-btn" style="display: none;" title="تثبيت التطبيق على جهازك">
+                    📲 تثبيت كـ App
+                </button>
+                <button onclick="exportFullDataJSON()" class="action-header-btn save-json-btn" title="تحميل ملف data.json بكل تعديلاتك">
+                    💾 حفظ JSON
+                </button>
+                <button onclick="document.getElementById('import-json-input').click()" class="action-header-btn import-btn" title="رفع ملف data.json لمزامنة التعديلات على هذا الجهاز">
+                    📂 استيراد JSON
+                </button>
+                <input type="file" id="import-json-input" accept=".json" style="display: none;" onchange="importDataJSON(event)">
+                <button onclick="restoreHiddenItems()" class="action-header-btn restore-btn" title="إظهار أي أعمال اختفت بسبب الحذف">
+                    🔄 استرجاع المختفي
+                </button>
+            </div>
 
-        <!-- أزرار حماية وحفظ الداتا واسترجاع المخفي في أقصى اليمين -->
-        <div class="data-actions-bar">
-            <button onclick="exportFullDataJSON()" class="action-header-btn save-json-btn" title="تحميل ملف data.json بكل تعديلاتك وإضافاتك وتقييماتك">
-                💾 حفظ الداتا للكود (JSON)
-            </button>
-            <button onclick="restoreHiddenItems()" class="action-header-btn restore-btn" title="إظهار أي أعمال اختفت بسبب الحذف أو النقل">
-                🔄 استرجاع المختفي
+            <!-- زرار المفضلة -->
+            <button id="fav-btn" class="fav-header-btn" title="الأعمال المفضلة (تقييم 9 و 10)">
+                <svg viewBox="0 0 24 24" class="heart-icon">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span class="btn-label">المفضلة (Top)</span>
+                <span id="fav-count-badge" class="btn-count">0</span>
             </button>
         </div>
 
