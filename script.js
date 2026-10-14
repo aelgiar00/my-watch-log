@@ -154,7 +154,7 @@ function filterAndDisplay() {
     displayItems(filteredData, false);
 }
 
-// دالة جديدة: نقل العمل فوراً بين (كملتها) و (وقفتها) بضغطة زرار بدون حذفه!
+// نقل العمل فوراً بين (كملتها) و (وقفتها) بضغطة زرار بدون حذفه
 window.toggleItemStatus = function(encodedName, category) {
     const name = decodeURIComponent(encodedName);
     const targetItem = allData.find(item => item.name === name && item.category === category);
@@ -166,13 +166,12 @@ window.toggleItemStatus = function(encodedName, category) {
 
     if (newStatus === 'dropped') {
         stoppedAtVal = prompt(`وقفت "${name}" عند فين؟ (مثال: الموسم 2 أو الحلقة 5)`, targetItem.stoppedAt || '1 Season');
-        if (stoppedAtVal === null) return; // لو داس Cancel
+        if (stoppedAtVal === null) return;
     }
 
     targetItem.status = newStatus;
     targetItem.stoppedAt = stoppedAtVal;
 
-    // حفظ التعديل في localItems لو هو مضاف يدوياً
     let localItems = JSON.parse(localStorage.getItem('my_added_watch_items')) || [];
     let updatedInLocal = false;
     localItems = localItems.map(item => {
@@ -185,7 +184,6 @@ window.toggleItemStatus = function(encodedName, category) {
     if (updatedInLocal) {
         localStorage.setItem('my_added_watch_items', JSON.stringify(localItems));
     } else {
-        // حفظ التعديل في statusOverrides لو هو من عناصر data.json الأساسية
         const statusOverrides = JSON.parse(localStorage.getItem('my_status_overrides')) || {};
         statusOverrides[`${name}_${category}`] = { status: newStatus, stoppedAt: stoppedAtVal };
         localStorage.setItem('my_status_overrides', JSON.stringify(statusOverrides));
@@ -225,12 +223,11 @@ window.addNewItem = function() {
 
     if(!name) { alert('أرجوك اكتب اسم العمل الأول!'); return; }
 
-    // لو العمل ده كان ممسوح قبل كده في البلاك ليست، نشيله من البلاك ليست فوراً عشان يظهر وميختفيش!
+    // لو العمل ده كان ممسوح قبل كده في البلاك ليست، نشيله من البلاك ليست فوراً عشان يظهر وميختفيش
     let deletedItems = JSON.parse(localStorage.getItem('my_deleted_watch_items')) || [];
     deletedItems = deletedItems.filter(key => !key.startsWith(`${name}_${activeCategory}`));
     localStorage.setItem('my_deleted_watch_items', JSON.stringify(deletedItems));
 
-    // لو العمل موجود أصلاً في نفس القسم (مثلاً كنت كاتبه في كملتها وبتكتبه في وقفتها)، نحدّث حالته بدل ما نعمل تعارض
     const existingIndex = allData.findIndex(item => normalizeText(item.name) === normalizeText(name) && item.category === activeCategory);
     
     const newItem = {
@@ -285,7 +282,7 @@ window.restoreHiddenItems = function() {
     }
 };
 
-// زرار تحميل ملف data.json النهائي بكل تعديلاتك وتقييماتك وإضافاتك عشان تحطه في الكود وميضيعش للأبد
+// زرار تحميل ملف data.json النهائي بكل تعديلاتك وتقييماتك وإضافاتك
 window.exportFullDataJSON = function() {
     const finalExportData = allData.map(item => {
         const effRating = getEffectiveRating(item);
@@ -494,7 +491,6 @@ async function displayItems(items, isFavView = false) {
             ? '<span class="status-badge status-completed">✓ اكتمل</span>' 
             : `<span class="status-badge status-dropped">✗ وقف عند ${item.stoppedAt || ''}</span>`;
 
-        // إظهار زرار نقل سريع بين (كملتها) و (وقفتها) في الأنمي والمسلسلات الأجنبي
         const canToggleStatus = (item.category === 'anime' || item.category === 'english_series');
         const toggleBtnHtml = canToggleStatus 
             ? `<button class="toggle-status-btn" onclick="toggleItemStatus('${encodeURIComponent(item.name)}', '${item.category}')">
