@@ -102,15 +102,33 @@ function updateAllCounts(currentFilteredCount = 0) {
     bannerCount.innerText = currentFilteredCount;
 }
 
+// تحميل الداتا بطريقة ذكية تمنع اختفاء أي عنصر معدل أو مضاف يدوياً
 async function loadData() {
     try {
         const response = await fetch('data.json');
         const jsonData = await response.json();
         const localItems = JSON.parse(localStorage.getItem('my_added_watch_items')) || [];
         const deletedItems = JSON.parse(localStorage.getItem('my_deleted_watch_items')) || [];
+        const statusOverrides = JSON.parse(localStorage.getItem('my_status_overrides')) || {};
         
-        const combinedData = [...localItems, ...jsonData];
-        allData = combinedData.filter(item => !deletedItems.includes(item.name + '_' + item.category));
+        // 1. نطبق أي تعديلات حالة (مكتمل/متوقف) محفوظة على داتا الـ JSON، ونستبعد المحذوفات من الـ JSON فقط
+        const filteredJsonData = jsonData.filter(item => {
+            const keyWithStatus = `${item.name}_${item.category}_${item.status || 'completed'}`;
+            const oldKey = `${item.name}_${item.category}`;
+            // لو العنصر موجود في إضافاتك اليدوية، نتجاهل نسخة الـ JSON القديمة عشان منكرروش، ونخلي نسختك إنت اللي تظهر
+            const existsInLocal = localItems.some(loc => normalizeText(loc.name) === normalizeText(item.name) && loc.category === item.category);
+            if (existsInLocal) return false;
+            return !deletedItems.includes(keyWithStatus) && !deletedItems.includes(oldKey);
+        }).map(item => {
+            const overrideKey = `${item.name}_${item.category}`;
+            if (statusOverrides[overrideKey]) {
+                return { ...item, ...statusOverrides[overrideKey] };
+            }
+            return item;
+        });
+
+        // 2. إضافاتك اليدوية في localItems تظهر دايماً ومستحيل البلاك ليست تخفيها!
+        allData = [...localItems, ...filteredJsonData];
         
         filterAndDisplay();
     } catch (error) {
@@ -136,11 +154,54 @@ function filterAndDisplay() {
     displayItems(filteredData, false);
 }
 
+// دالة جديدة: نقل العمل فوراً بين (كملتها) و (وقفتها) بضغطة زرار بدون حذفه!
+window.toggleItemStatus = function(encodedName, category) {
+    const name = decodeURIComponent(encodedName);
+    const targetItem = allData.find(item => item.name === name && item.category === category);
+    if (!targetItem) return;
+
+    const currentStatus = targetItem.status || 'completed';
+    const newStatus = currentStatus === 'completed' ? 'dropped' : 'completed';
+    let stoppedAtVal = '';
+
+    if (newStatus === 'dropped') {
+        stoppedAtVal = prompt(`وقفت "${name}" عند فين؟ (مثال: الموسم 2 أو الحلقة 5)`, targetItem.stoppedAt || '1 Season');
+        if (stoppedAtVal === null) return; // لو داس Cancel
+    }
+
+    targetItem.status = newStatus;
+    targetItem.stoppedAt = stoppedAtVal;
+
+    // حفظ التعديل في localItems لو هو مضاف يدوياً
+    let localItems = JSON.parse(localStorage.getItem('my_added_watch_items')) || [];
+    let updatedInLocal = false;
+    localItems = localItems.map(item => {
+        if (item.name === name && item.category === category) {
+            updatedInLocal = true;
+            return { ...item, status: newStatus, stoppedAt: stoppedAtVal };
+        }
+        return item;
+    });
+    if (updatedInLocal) {
+        localStorage.setItem('my_added_watch_items', JSON.stringify(localItems));
+    } else {
+        // حفظ التعديل في statusOverrides لو هو من عناصر data.json الأساسية
+        const statusOverrides = JSON.parse(localStorage.getItem('my_status_overrides')) || {};
+        statusOverrides[`${name}_${category}`] = { status: newStatus, stoppedAt: stoppedAtVal };
+        localStorage.setItem('my_status_overrides', JSON.stringify(statusOverrides));
+    }
+
+    filterAndDisplay();
+};
+
 window.deleteItem = function(encodedName, category) {
     const name = decodeURIComponent(encodedName);
-    if (!confirm(`متأكد إنك عايز تمسح "${name}" من اللوج نهائياً؟`)) return;
+    if (!confirm(`متأكد إنك عايز تمسح "${name}" من اللوج نهائياً؟\n(لو عايز تنقله لقسم "وقفتها"، دوس Cancel واستخدم زرار "نقل" اللي تحت علامة اكتمل)`)) return;
 
-    const uniqueKey = name + '_' + category;
+    const targetItem = allData.find(item => item.name === name && item.category === category);
+    const status = targetItem ? (targetItem.status || 'completed') : 'completed';
+    const uniqueKey = `${name}_${category}_${status}`;
+
     const deletedItems = JSON.parse(localStorage.getItem('my_deleted_watch_items')) || [];
     if (!deletedItems.includes(uniqueKey)) {
         deletedItems.push(uniqueKey);
@@ -164,6 +225,14 @@ window.addNewItem = function() {
 
     if(!name) { alert('أرجوك اكتب اسم العمل الأول!'); return; }
 
+    // لو العمل ده كان ممسوح قبل كده في البلاك ليست، نشيله من البلاك ليست فوراً عشان يظهر وميختفيش!
+    let deletedItems = JSON.parse(localStorage.getItem('my_deleted_watch_items')) || [];
+    deletedItems = deletedItems.filter(key => !key.startsWith(`${name}_${activeCategory}`));
+    localStorage.setItem('my_deleted_watch_items', JSON.stringify(deletedItems));
+
+    // لو العمل موجود أصلاً في نفس القسم (مثلاً كنت كاتبه في كملتها وبتكتبه في وقفتها)، نحدّث حالته بدل ما نعمل تعارض
+    const existingIndex = allData.findIndex(item => normalizeText(item.name) === normalizeText(name) && item.category === activeCategory);
+    
     const newItem = {
         name: name,
         tmdb_search_name: name,
@@ -175,8 +244,14 @@ window.addNewItem = function() {
         lang: activeCategory === 'cinema' ? cinemaLang : null
     };
 
-    allData.unshift(newItem);
-    const localItems = JSON.parse(localStorage.getItem('my_added_watch_items')) || [];
+    if (existingIndex !== -1) {
+        allData[existingIndex] = { ...allData[existingIndex], ...newItem };
+    } else {
+        allData.unshift(newItem);
+    }
+
+    let localItems = JSON.parse(localStorage.getItem('my_added_watch_items')) || [];
+    localItems = localItems.filter(item => !(normalizeText(item.name) === normalizeText(name) && item.category === activeCategory));
     localItems.unshift(newItem);
     localStorage.setItem('my_added_watch_items', JSON.stringify(localItems));
     
@@ -196,6 +271,45 @@ window.addNewItem = function() {
     filterAndDisplay();
 }
 
+// زرار استرجاع كل الأعمال اللي اختفت بالغلط بسبب الحذف أو النقل
+window.restoreHiddenItems = function() {
+    const deletedItems = JSON.parse(localStorage.getItem('my_deleted_watch_items')) || [];
+    if (deletedItems.length === 0) {
+        alert('مفيش أي أعمال مخفية في قائمة المحذوفات حالياً! كله ظاهر قدامك.');
+        return;
+    }
+    if (confirm(`لقينا (${deletedItems.length}) عمل مخفي في قائمة المحذوفات:\n(${deletedItems.join(' ، ')})\n\nهل عايز تسترجعهم كلهم دلوقتي؟`)) {
+        localStorage.removeItem('my_deleted_watch_items');
+        loadData();
+        alert('تم استرجاع كل الأعمال المخفية بنجاح! راجع أقسامك دلوقتي.');
+    }
+};
+
+// زرار تحميل ملف data.json النهائي بكل تعديلاتك وتقييماتك وإضافاتك عشان تحطه في الكود وميضيعش للأبد
+window.exportFullDataJSON = function() {
+    const finalExportData = allData.map(item => {
+        const effRating = getEffectiveRating(item);
+        const cleanItem = { ...item };
+        delete cleanItem.finalRating;
+        cleanItem.myRating = effRating >= 0 ? effRating : 0;
+        return cleanItem;
+    });
+
+    const dataStr = JSON.stringify(finalExportData, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'data.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    alert('تم تحميل ملف data.json الجديد بنجاح! 🎉\nالملف ده جواه كل إضافاتك (بما فيها السينما) وكل تقييماتك وتعديلاتك.\nانسخه وحطه مكان ملف data.json في الكود عندك عشان يثبت للأبد على أي جهاز!');
+};
+
 window.saveMyRating = function(encodedName) {
     const name = decodeURIComponent(encodedName);
     const safeId = encodedName.replace(/[^a-zA-Z0-9]/g, '_');
@@ -212,12 +326,9 @@ window.saveMyRating = function(encodedName) {
     }
 }
 
-// دالة البحث المفصولة: إنجليزي صافي للأجنبي والأنمي، وعربي صافي للعربي
 async function fetchSmartTMDBData(item) {
     const isTV = item.category.includes('series') || item.category === 'anime';
     const type = isTV ? 'tv' : 'movie';
-    
-    // تحديد هل العمل عربي ولا أجنبي/أنمي
     const isArabicCategory = item.category.startsWith('arabic_') || (item.category === 'cinema' && item.lang === 'ar');
 
     let posterUrl = null;
@@ -226,10 +337,8 @@ async function fetchSmartTMDBData(item) {
     let apiEpisodes = '';
     let matchedId = item.tmdb_id || null;
 
-    // 1. لو فيه ID مباشر من TMDB
     if (matchedId) {
         try {
-            // لو أجنبي أو أنمي بنطلب en-US فقط عشان مستحيل يجيب بوستر مدبلج عربي
             const langParam = isArabicCategory ? 'ar-EG' : 'en-US';
             const directRes = await fetch(`${TMDB_BASE_URL}/${type}/${matchedId}?api_key=${TMDB_API_KEY}&language=${langParam}`);
             const directData = await directRes.json();
@@ -242,7 +351,6 @@ async function fetchSmartTMDBData(item) {
         } catch(e) { console.error(e); }
     }
 
-    // 2. البحث بالاسم
     if (!posterUrl) {
         const queries = [];
         if (item.tmdb_search_name) queries.push(item.tmdb_search_name);
@@ -256,12 +364,10 @@ async function fetchSmartTMDBData(item) {
                 let resultsList = [];
 
                 if (!isArabicCategory) {
-                    // للأفلام والمسلسلات الأجنبي والأنمي: نبحث بـ en-US فقط لمنع أي بوستر عربي مدبلج
                     const resEn = await fetch(`${TMDB_BASE_URL}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(q)}&language=en-US`);
                     const dataEn = await resEn.json();
                     resultsList = dataEn.results || [];
                 } else {
-                    // للأعمال العربي فقط: نبحث في العربي والإنجليزي مع اشتراط أن تكون اللغة الأصلية للعمل هي العربية (ar) لمنع أفلام زي The Gentlemen
                     const [resAr, resEn] = await Promise.all([
                         fetch(`${TMDB_BASE_URL}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(q)}&language=ar-EG`),
                         fetch(`${TMDB_BASE_URL}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(q)}&language=en-US`)
@@ -270,12 +376,8 @@ async function fetchSmartTMDBData(item) {
                     const dataEn = await resEn.json();
 
                     let combined = [...(dataAr.results || []), ...(dataEn.results || [])];
-                    
-                    // فلتر صارم لقسم العربي: لازم يكون العمل عربي الأصلي (original_language === 'ar') إلا لو هو مضاف استثناء
                     const arabicOnly = combined.filter(r => r.original_language === 'ar');
-                    if (arabicOnly.length > 0) {
-                        combined = arabicOnly;
-                    }
+                    if (arabicOnly.length > 0) combined = arabicOnly;
 
                     const uniqueMap = new Map();
                     for (const r of combined) {
@@ -334,7 +436,6 @@ async function fetchSmartTMDBData(item) {
         }
     }
 
-    // 3. جلب عدد المواسم والحلقات الدقيق (أو البوستر الأصلي لو ناقص)
     if (matchedId) {
         try {
             const detailLang = isArabicCategory ? 'ar-EG' : 'en-US';
@@ -392,6 +493,14 @@ async function displayItems(items, isFavView = false) {
         let statusBadge = item.status === 'completed' 
             ? '<span class="status-badge status-completed">✓ اكتمل</span>' 
             : `<span class="status-badge status-dropped">✗ وقف عند ${item.stoppedAt || ''}</span>`;
+
+        // إظهار زرار نقل سريع بين (كملتها) و (وقفتها) في الأنمي والمسلسلات الأجنبي
+        const canToggleStatus = (item.category === 'anime' || item.category === 'english_series');
+        const toggleBtnHtml = canToggleStatus 
+            ? `<button class="toggle-status-btn" onclick="toggleItemStatus('${encodeURIComponent(item.name)}', '${item.category}')">
+                ${item.status === 'dropped' ? '↪️ نقل لـ كملتها' : '⏸️ نقل لـ وقفتها'}
+               </button>`
+            : '';
             
         const hasValidRating = item.finalRating >= 0;
         const displayRating = hasValidRating ? item.finalRating : 'لم يقيم';
@@ -400,8 +509,9 @@ async function displayItems(items, isFavView = false) {
 
         return `
             <div class="card">
-                <button class="delete-btn" title="حذف من اللوج" onclick="deleteItem('${encodeURIComponent(item.name)}', '${item.category}')">✖</button>
+                <button class="delete-btn" title="حذف نهائي" onclick="deleteItem('${encodeURIComponent(item.name)}', '${item.category}')">✖</button>
                 ${statusBadge}
+                ${toggleBtnHtml}
                 <img src="${tmdbInfo.posterUrl}" alt="${item.name}" onerror="this.onerror=null;this.src='${fallbackImg}';">
                 <div class="card-content">
                     <h3 class="movie-title">${item.name}</h3>
