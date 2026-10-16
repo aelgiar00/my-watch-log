@@ -1,5 +1,1988 @@
 [
   {
+    "name": "حاميها حراميها",
+    "tmdb_search_name": "حاميها حراميها",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 0,
+    "poster": "hamiha.jpg",
+    "lang": null
+  },
+  {
+    "name": "أريد رجلا",
+    "tmdb_search_name": "أريد رجلا",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 0,
+    "poster": "oreed.jpg",
+    "lang": null
+  },
+  {
+    "name": "ذات",
+    "tmdb_search_name": "ذات",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 0,
+    "poster": "zaat.jpg",
+    "lang": null
+  },
+  {
+    "name": "عريس دليفري",
+    "tmdb_search_name": "عريس دليفري",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 0,
+    "poster": "arees.jpg",
+    "lang": null
+  },
+  {
+    "name": "آدم وجميلة",
+    "tmdb_search_name": "آدم وجميلة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 0,
+    "poster": "adam.jpg",
+    "lang": null
+  },
+  {
+    "name": "قشطة وعسل",
+    "tmdb_search_name": "قشطة وعسل",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 0,
+    "poster": "eshta.jpg",
+    "lang": null
+  },
+  {
+    "name": "سك علي اخواتك",
+    "tmdb_search_name": "سك علي اخواتك",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 0,
+    "poster": "sok.jpg",
+    "lang": null
+  },
+  {
+    "name": "بدل الحدوتة ثلاثة",
+    "tmdb_search_name": "بدل الحدوتة ثلاثة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 0,
+    "poster": "badal.jpg",
+    "lang": null
+  },
+  {
+    "name": "الانسة فرح",
+    "tmdb_search_name": "الانسة فرح",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 0,
+    "poster": "farah.jpg",
+    "lang": null
+  },
+  {
+    "name": "عمر ودياب",
+    "tmdb_search_name": "عمر ودياب",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 0,
+    "poster": "omar.jpg",
+    "lang": null
+  },
+  {
+    "name": "نمره اثنين",
+    "tmdb_search_name": "نمره اثنين",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 0,
+    "poster": "nemra.jpg",
+    "lang": null
+  },
+  {
+    "name": "وعد إبليس",
+    "tmdb_search_name": "وعد إبليس",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 1,
+    "lang": null
+  },
+  {
+    "name": "سراب",
+    "tmdb_search_name": "سراب",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 6,
+    "lang": null
+  },
+  {
+    "name": "اقامة جبرية",
+    "tmdb_search_name": "اقامة جبرية",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "منتهي الصلاحية",
+    "tmdb_search_name": "منتهي الصلاحية",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 4,
+    "lang": null
+  },
+  {
+    "name": "ظلم المصطبة",
+    "tmdb_search_name": "ظلم المصطبة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "الغاوي",
+    "tmdb_search_name": "الغاوي",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 2,
+    "lang": null
+  },
+  {
+    "name": "الكابتن",
+    "tmdb_search_name": "الكابتن",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 1,
+    "lang": null
+  },
+  {
+    "name": "شهادة معاملة أطفال",
+    "tmdb_search_name": "شهادة معاملة أطفال",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 2,
+    "lang": null
+  },
+  {
+    "name": "عايشة الدور",
+    "tmdb_search_name": "عايشة الدور",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 6,
+    "lang": null
+  },
+  {
+    "name": "قلبي ومفتاحه",
+    "tmdb_search_name": "قلبي ومفتاحه",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "النص",
+    "tmdb_search_name": "النص",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 6,
+    "lang": null
+  },
+  {
+    "name": "ولاد الشمس",
+    "tmdb_search_name": "ولاد الشمس",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 6,
+    "lang": null
+  },
+  {
+    "name": "إش إش",
+    "tmdb_search_name": "إش إش",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 1,
+    "lang": null
+  },
+  {
+    "name": "نقطة سودة",
+    "tmdb_search_name": "نقطة سودة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 4,
+    "lang": null
+  },
+  {
+    "name": "فقرة الساحر",
+    "tmdb_search_name": "فقرة الساحر",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 1,
+    "lang": null
+  },
+  {
+    "name": "موعد مع الماضي",
+    "tmdb_search_name": "موعد مع الماضي",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "تيتا زوزو",
+    "tmdb_search_name": "تيتا زوزو",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "ديبو",
+    "tmdb_search_name": "ديبو",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 4,
+    "lang": null
+  },
+  {
+    "name": "برغم القانون",
+    "tmdb_search_name": "برغم القانون",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 4,
+    "lang": null
+  },
+  {
+    "name": "عمر افندي",
+    "tmdb_search_name": "عمر افندي",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "مفترق طرق",
+    "tmdb_search_name": "مفترق طرق",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 3,
+    "lang": null
+  },
+  {
+    "name": "بين السطور",
+    "tmdb_search_name": "بين السطور",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 6,
+    "lang": null
+  },
+  {
+    "name": "جولة اخيرة",
+    "tmdb_search_name": "جولة اخيرة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 4,
+    "lang": null
+  },
+  {
+    "name": "بدون سابق انذار",
+    "tmdb_search_name": "بدون سابق انذار",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "بابا جه",
+    "tmdb_search_name": "بابا جه",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 3,
+    "lang": null
+  },
+  {
+    "name": "خالد نور وولده نور خالد",
+    "tmdb_search_name": "خالد نور وولده نور خالد",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "كوبرا",
+    "tmdb_search_name": "كوبرا",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "المعلم",
+    "tmdb_search_name": "المعلم",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 3,
+    "lang": null
+  },
+  {
+    "name": "العودة",
+    "tmdb_search_name": "العودة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "زينهم",
+    "tmdb_search_name": "زينهم",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "صوت وصورة",
+    "tmdb_search_name": "صوت وصورة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "علي باب العمارة",
+    "tmdb_search_name": "علي باب العمارة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "سيب وأنا أسيب",
+    "tmdb_search_name": "سيب وأنا أسيب",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "حكايات جروب الدفعة",
+    "tmdb_search_name": "حكايات جروب الدفعة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "حكايات جروب العيلة",
+    "tmdb_search_name": "حكايات جروب العيلة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "وبينا ميعاد",
+    "tmdb_search_name": "وبينا ميعاد",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "أزمة منتصف العمر",
+    "tmdb_search_name": "أزمة منتصف العمر",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 6,
+    "lang": null
+  },
+  {
+    "name": "الاصلي",
+    "tmdb_search_name": "الاصلي",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 2,
+    "lang": null
+  },
+  {
+    "name": "علاقة مشروعة",
+    "tmdb_search_name": "علاقة مشروعة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 4,
+    "lang": null
+  },
+  {
+    "name": "كشف مستعجل",
+    "tmdb_search_name": "كشف مستعجل",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "جت سليمة",
+    "tmdb_search_name": "جت سليمة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "عملة نادرة",
+    "tmdb_search_name": "عملة نادرة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 1,
+    "lang": null
+  },
+  {
+    "name": "ضرب نار",
+    "tmdb_search_name": "ضرب نار",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 2,
+    "lang": null
+  },
+  {
+    "name": "أجازة مفتوحة",
+    "tmdb_search_name": "أجازة مفتوحة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "مجنونة بيك",
+    "tmdb_search_name": "مجنونة بيك",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "الليلة واللي فيها",
+    "tmdb_search_name": "الليلة واللي فيها",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 6,
+    "lang": null
+  },
+  {
+    "name": "وش وضهر",
+    "tmdb_search_name": "وش وضهر",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "البيت بيتي",
+    "tmdb_search_name": "البيت بيتي",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "البحث عن علا",
+    "tmdb_search_name": "البحث عن علا",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 1,
+    "lang": null
+  },
+  {
+    "name": "ملف سري",
+    "tmdb_search_name": "ملف سري",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "مكتوب عليا",
+    "tmdb_search_name": "مكتوب عليا",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "توبة",
+    "tmdb_search_name": "توبة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "حلوة الدنيا سكر",
+    "tmdb_search_name": "حلوة الدنيا سكر",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "ضل راجل",
+    "tmdb_search_name": "ضل راجل",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 3,
+    "lang": null
+  },
+  {
+    "name": "فارس بلا جواز",
+    "tmdb_search_name": "فارس بلا جواز",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 6,
+    "lang": null
+  },
+  {
+    "name": "كوفيد-25",
+    "tmdb_search_name": "كوفيد-25",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 4,
+    "lang": null
+  },
+  {
+    "name": "بين السما والأرض",
+    "tmdb_search_name": "بين السما والأرض",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 4,
+    "lang": null
+  },
+  {
+    "name": "أحسن اب",
+    "tmdb_search_name": "أحسن اب",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 4,
+    "lang": null
+  },
+  {
+    "name": "النمر",
+    "tmdb_search_name": "النمر",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "الشركة الألمانية لمكافحة الخوارق",
+    "tmdb_search_name": "الشركة الألمانية لمكافحة الخوارق",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 3,
+    "lang": null
+  },
+  {
+    "name": "طلقتك نفسي",
+    "tmdb_search_name": "طلقتك نفسي",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "قوت القلوب",
+    "tmdb_search_name": "قوت القلوب",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "اسعاف يونس",
+    "tmdb_search_name": "اسعاف يونس",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 2,
+    "lang": null
+  },
+  {
+    "name": "بخط الايد",
+    "tmdb_search_name": "بخط الايد",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "جمال الحريم",
+    "tmdb_search_name": "جمال الحريم",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "لؤلؤ",
+    "tmdb_search_name": "لؤلؤ",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 4,
+    "lang": null
+  },
+  {
+    "name": "خيط حرير",
+    "tmdb_search_name": "خيط حرير",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 6,
+    "lang": null
+  },
+  {
+    "name": "اسود فاتح",
+    "tmdb_search_name": "اسود فاتح",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "الا انا",
+    "tmdb_search_name": "الا انا",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "الحرامي",
+    "tmdb_search_name": "الحرامي",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "شديد الخطورة",
+    "tmdb_search_name": "شديد الخطورة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "مملكة ابليس",
+    "tmdb_search_name": "مملكة ابليس",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "حب عمري",
+    "tmdb_search_name": "حب عمري",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "شاهد عيان",
+    "tmdb_search_name": "شاهد عيان",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "رجالة البيت",
+    "tmdb_search_name": "رجالة البيت",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 3,
+    "lang": null
+  },
+  {
+    "name": "لما كنا صغيرين",
+    "tmdb_search_name": "لما كنا صغيرين",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "فرصة تانية",
+    "tmdb_search_name": "فرصة تانية",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "فلانتينو",
+    "tmdb_search_name": "فلانتينو",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "شقة فيصل",
+    "tmdb_search_name": "شقة فيصل",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "أبواب الشك",
+    "tmdb_search_name": "أبواب الشك",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 6,
+    "lang": null
+  },
+  {
+    "name": "قمر هادي",
+    "tmdb_search_name": "قمر هادي",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 3,
+    "lang": null
+  },
+  {
+    "name": "البرنسيسة بيسة",
+    "tmdb_search_name": "البرنسيسة بيسة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "سوبر ميرو",
+    "tmdb_search_name": "سوبر ميرو",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "الواد سيد الشحات",
+    "tmdb_search_name": "الواد سيد الشحات",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "واكلينها والعة",
+    "tmdb_search_name": "واكلينها والعة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 4,
+    "lang": null
+  },
+  {
+    "name": "طلعت روحي",
+    "tmdb_search_name": "طلعت روحي",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 9,
+    "lang": null
+  },
+  {
+    "name": "الشريط الأحمر",
+    "tmdb_search_name": "الشريط الأحمر",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "أمر واقع",
+    "tmdb_search_name": "أمر واقع",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "رسايل",
+    "tmdb_search_name": "رسايل",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "فوق السحاب",
+    "tmdb_search_name": "فوق السحاب",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "أيوب",
+    "tmdb_search_name": "أيوب",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "حجر جهنم",
+    "tmdb_search_name": "حجر جهنم",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "هربانة منها",
+    "tmdb_search_name": "هربانة منها",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "طاقة القدر",
+    "tmdb_search_name": "طاقة القدر",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "وضع أمني",
+    "tmdb_search_name": "وضع أمني",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "لمعي القط",
+    "tmdb_search_name": "لمعي القط",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "الحساب يجمع",
+    "tmdb_search_name": "الحساب يجمع",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "بنات سوبرمان",
+    "tmdb_search_name": "بنات سوبرمان",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "ريح المدام",
+    "tmdb_search_name": "ريح المدام",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "الزيبق",
+    "tmdb_search_name": "الزيبق",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "عفاريت عدلي علام",
+    "tmdb_search_name": "عفاريت عدلي علام",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "الكيف",
+    "tmdb_search_name": "الكيف",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "الخروج",
+    "tmdb_search_name": "الخروج",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "ابو البنات",
+    "tmdb_search_name": "ابو البنات",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "فوق مستوى الشبهات",
+    "tmdb_search_name": "فوق مستوى الشبهات",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "A Thousand and One Nights",
+    "tmdb_search_name": "A Thousand and One Nights",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "أنا وبابا وماما",
+    "tmdb_search_name": "أنا وبابا وماما",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "يوميات زوجة مفروسة أوي",
+    "tmdb_search_name": "يوميات زوجة مفروسة أوي",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "El Excellence",
+    "tmdb_search_name": "El Excellence",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 9,
+    "lang": null
+  },
+  {
+    "name": "الكبريت الأحمر",
+    "tmdb_search_name": "الكبريت الأحمر",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "ساحرة الجنوب",
+    "tmdb_search_name": "ساحرة الجنوب",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "نصيبي وقسمتك",
+    "tmdb_search_name": "نصيبي وقسمتك",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 9,
+    "lang": null
+  },
+  {
+    "name": "مولد وصاحبه غايب",
+    "tmdb_search_name": "مولد وصاحبه غايب",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "حالة عشق",
+    "tmdb_search_name": "حالة عشق",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "مولانا العاشق",
+    "tmdb_search_name": "مولانا العاشق",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "وش تاني",
+    "tmdb_search_name": "وش تاني",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "كيد الحموات",
+    "tmdb_search_name": "كيد الحموات",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "دلع بنات",
+    "tmdb_search_name": "دلع بنات",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "سلسال الدم",
+    "tmdb_search_name": "سلسال الدم",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "هبة رجل الغراب",
+    "tmdb_search_name": "هبة رجل الغراب",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "الشك",
+    "tmdb_search_name": "الشك",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "حكايات بنات",
+    "tmdb_search_name": "حكايات بنات",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "كيد النسا",
+    "tmdb_search_name": "كيد النسا",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "One Thousand and One Nights",
+    "tmdb_search_name": "One Thousand and One Nights",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 9,
+    "lang": null
+  },
+  {
+    "name": "قضية صفية",
+    "tmdb_search_name": "قضية صفية",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "كامل العدد",
+    "tmdb_search_name": "كامل العدد",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "لام شمسية",
+    "tmdb_search_name": "لام شمسية",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "فهد البطل",
+    "tmdb_search_name": "فهد البطل",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "إمبراطورية م",
+    "tmdb_search_name": "إمبراطورية م",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "لحظة غضب",
+    "tmdb_search_name": "لحظة غضب",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "جودر",
+    "tmdb_search_name": "جودر",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 9,
+    "lang": null
+  },
+  {
+    "name": "صلة رحم",
+    "tmdb_search_name": "صلة رحم",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "الحشاشين",
+    "tmdb_search_name": "الحشاشين",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "حالة خاصة",
+    "tmdb_search_name": "حالة خاصة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "سفاح الجيزة",
+    "tmdb_search_name": "سفاح الجيزة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "بالطو",
+    "tmdb_search_name": "بالطو",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "الصفارة",
+    "tmdb_search_name": "الصفارة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "جعفر العمدة",
+    "tmdb_search_name": "جعفر العمدة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "اللي مالوش كبير",
+    "tmdb_search_name": "اللي مالوش كبير",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "الغرفة 207",
+    "tmdb_search_name": "الغرفة 207",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "موضوع عائلي",
+    "tmdb_search_name": "موضوع عائلي",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "ملوك الجدعنة",
+    "tmdb_search_name": "ملوك الجدعنة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "هجمة مرتدة",
+    "tmdb_search_name": "هجمة مرتدة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "ونحب تاني ليه",
+    "tmdb_search_name": "ونحب تاني ليه",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "في كل أسبوع يوم جمعة",
+    "tmdb_search_name": "في كل أسبوع يوم جمعة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "خيانة عهد",
+    "tmdb_search_name": "خيانة عهد",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "النهاية",
+    "tmdb_search_name": "النهاية",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "البرنس",
+    "tmdb_search_name": "البرنس",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "Bi 100 Wish",
+    "tmdb_search_name": "Bi 100 Wish",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "لمس أكتاف",
+    "tmdb_search_name": "لمس أكتاف",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 2,
+    "lang": null
+  },
+  {
+    "name": "هوجان",
+    "tmdb_search_name": "هوجان",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "زلزال",
+    "tmdb_search_name": "زلزال",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "زودياك",
+    "tmdb_search_name": "زودياك",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 2,
+    "lang": null
+  },
+  {
+    "name": "حكايتي",
+    "tmdb_search_name": "حكايتي",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "الوصية",
+    "tmdb_search_name": "الوصية",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "نسر الصعيد",
+    "tmdb_search_name": "نسر الصعيد",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "عوالم خفية",
+    "tmdb_search_name": "عوالم خفية",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "الشهد والدموع",
+    "tmdb_search_name": "الشهد والدموع",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "رحيم",
+    "tmdb_search_name": "رحيم",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "ابو عمر المصري",
+    "tmdb_search_name": "ابو عمر المصري",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "طاقة نور",
+    "tmdb_search_name": "طاقة نور",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "كلبش",
+    "tmdb_search_name": "كلبش",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "لا تطفئ الشمس",
+    "tmdb_search_name": "لا تطفئ الشمس",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "كفر دلهاب",
+    "tmdb_search_name": "كفر دلهاب",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 9,
+    "lang": null
+  },
+  {
+    "name": "الميزان",
+    "tmdb_search_name": "الميزان",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "مأمون وشركاه",
+    "tmdb_search_name": "مأمون وشركاه",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "القيصر",
+    "tmdb_search_name": "القيصر",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "الأسطورة",
+    "tmdb_search_name": "الأسطورة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "حق ميت",
+    "tmdb_search_name": "حق ميت",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "لهفة",
+    "tmdb_search_name": "لهفة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "طريقي",
+    "tmdb_search_name": "طريقي",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "لعبة ابليس",
+    "tmdb_search_name": "لعبة ابليس",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 9,
+    "lang": null
+  },
+  {
+    "name": "صاحب السعادة",
+    "tmdb_search_name": "صاحب السعادة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "جبل الحلال",
+    "tmdb_search_name": "جبل الحلال",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "السبع وصايا",
+    "tmdb_search_name": "السبع وصايا",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "ابن حلال",
+    "tmdb_search_name": "ابن حلال",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "الصياد",
+    "tmdb_search_name": "الصياد",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "سجن النسا",
+    "tmdb_search_name": "سجن النسا",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 5,
+    "lang": null
+  },
+  {
+    "name": "الرجل العناب",
+    "tmdb_search_name": "الرجل العناب",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "حكاية حياة",
+    "tmdb_search_name": "حكاية حياة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 9,
+    "lang": null
+  },
+  {
+    "name": "العراف",
+    "tmdb_search_name": "العراف",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 9,
+    "lang": null
+  },
+  {
+    "name": "اسم مؤقت",
+    "tmdb_search_name": "اسم مؤقت",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 9,
+    "lang": null
+  },
+  {
+    "name": "مع سبق الإصرار",
+    "tmdb_search_name": "مع سبق الإصرار",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "خطوط حمراء",
+    "tmdb_search_name": "خطوط حمراء",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "رقم مجهول",
+    "tmdb_search_name": "رقم مجهول",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "ادم",
+    "tmdb_search_name": "ادم",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "المواطن x",
+    "tmdb_search_name": "المواطن x",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "زهرة وأزواجها الخمسة",
+    "tmdb_search_name": "زهرة وأزواجها الخمسة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "العار",
+    "tmdb_search_name": "العار",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "عايزة اتجوز",
+    "tmdb_search_name": "عايزة اتجوز",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "الأدهم",
+    "tmdb_search_name": "الأدهم",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 9,
+    "lang": null
+  },
+  {
+    "name": "قلب ميت",
+    "tmdb_search_name": "قلب ميت",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": null
+  },
+  {
+    "name": "راجل وست ستات",
+    "tmdb_search_name": "راجل وست ستات",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 8,
+    "lang": null
+  },
+  {
+    "name": "عصابة بابا وماما",
+    "tmdb_search_name": "عصابة بابا وماما",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 9,
+    "lang": null
+  },
+  {
+    "name": "نيللي وشريهان",
+    "tmdb_search_name": "نيللي وشريهان",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 10,
+    "lang": null
+  },
+  {
+    "name": "نص الشعب اسمه محمد",
+    "tmdb_search_name": "نص الشعب اسمه محمد",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 9,
+    "lang": null
+  },
+  {
+    "name": "في بيتنا روبوت",
+    "tmdb_search_name": "في بيتنا روبوت",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 9,
+    "lang": null
+  },
+  {
+    "name": "في لا لا لاند",
+    "tmdb_search_name": "في لا لا لاند",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 9,
+    "lang": null
+  },
+  {
+    "name": "فرقة ناجي عطا الله",
+    "tmdb_search_name": "فرقة ناجي عطا الله",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 10,
+    "lang": null
+  },
+  {
+    "name": "خلصانة بشياكة",
+    "tmdb_search_name": "خلصانة بشياكة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 9,
+    "lang": null
+  },
+  {
+    "name": "اللص والكتاب",
+    "tmdb_search_name": "اللص والكتاب",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 10,
+    "lang": null
+  },
+  {
+    "name": "اشغال شقة",
+    "tmdb_search_name": "اشغال شقة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 9,
+    "lang": null
+  },
+  {
+    "name": "الزوجة الرابعة",
+    "tmdb_search_name": "الزوجة الرابعة",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 9,
+    "lang": null
+  },
+  {
+    "name": "El Kabeer Awy",
+    "tmdb_search_name": "El Kabeer Awy",
+    "category": "arabic_series_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 10,
+    "lang": null
+  },
+  {
+    "name": "Zootopia 2",
+    "tmdb_search_name": "Zootopia 2",
+    "category": "english_movies_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 2,
+    "lang": null
+  },
+  {
+    "name": "The Other Mommy",
+    "tmdb_search_name": "The Other Mommy",
+    "category": "english_movies_2026",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 1,
+    "lang": null
+  },
+  {
+    "name": "Demon Slayer Infinity Castle",
+    "tmdb_search_name": "Demon Slayer Infinity Castle",
+    "category": "cinema",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "lang": "en"
+  },
+  {
+    "name": "One piece Red",
+    "tmdb_search_name": "One piece Red",
+    "category": "cinema",
+    "status": "completed",
+    "stoppedAt": "",
+    "myRating": 7,
+    "year_watched": 2026,
+    "lang": "en"
+  },
+  {
     "name": "The Vermilion Mask",
     "tmdb_search_name": "The Vermilion Mask",
     "category": "anime",
@@ -20,16 +2003,6 @@
     "lang": null
   },
   {
-    "name": "تيتة رهيبة",
-    "tmdb_search_name": "تيتة رهيبة",
-    "category": "cinema",
-    "status": "completed",
-    "stoppedAt": "",
-    "myRating": 7,
-    "year_watched": 2026,
-    "lang": "ar"
-  },
-  {
     "name": "الخلية",
     "tmdb_search_name": "الخلية",
     "category": "cinema",
@@ -42,16 +2015,6 @@
   {
     "name": "لص بغداد",
     "tmdb_search_name": "لص بغداد",
-    "category": "cinema",
-    "status": "completed",
-    "stoppedAt": "",
-    "myRating": 7,
-    "year_watched": 2026,
-    "lang": "ar"
-  },
-  {
-    "name": "كازابلانكا",
-    "tmdb_search_name": "كازابلانكا",
     "category": "cinema",
     "status": "completed",
     "stoppedAt": "",
@@ -140,16 +2103,6 @@
     "lang": "ar"
   },
   {
-    "name": "جوازة ميري",
-    "tmdb_search_name": "جوازة ميري",
-    "category": "cinema",
-    "status": "completed",
-    "stoppedAt": "",
-    "myRating": 5,
-    "year_watched": 2026,
-    "lang": "ar"
-  },
-  {
     "name": "الكنز 1",
     "tmdb_search_name": "الكنز 1",
     "category": "cinema",
@@ -160,38 +2113,8 @@
     "lang": "ar"
   },
   {
-    "name": "الثلاثة يشتغلونها",
-    "tmdb_search_name": "الثلاثة يشتغلونها",
-    "category": "cinema",
-    "status": "completed",
-    "stoppedAt": "",
-    "myRating": 5,
-    "year_watched": 2026,
-    "lang": "ar"
-  },
-  {
-    "name": "عنتر ابن ابن ابن ابن شداد",
-    "tmdb_search_name": "عنتر ابن ابن ابن ابن شداد",
-    "category": "cinema",
-    "status": "completed",
-    "stoppedAt": "",
-    "myRating": 5,
-    "year_watched": 2026,
-    "lang": "ar"
-  },
-  {
     "name": "جحيم في الهند",
     "tmdb_search_name": "جحيم في الهند",
-    "category": "cinema",
-    "status": "completed",
-    "stoppedAt": "",
-    "myRating": 5,
-    "year_watched": 2026,
-    "lang": "ar"
-  },
-  {
-    "name": "Ahwak",
-    "tmdb_search_name": "Ahwak",
     "category": "cinema",
     "status": "completed",
     "stoppedAt": "",
@@ -220,16 +2143,6 @@
     "lang": "ar"
   },
   {
-    "name": "Inside the Game",
-    "tmdb_search_name": "Inside the Game",
-    "category": "cinema",
-    "status": "completed",
-    "stoppedAt": "",
-    "myRating": 3,
-    "year_watched": 2026,
-    "lang": "ar"
-  },
-  {
     "name": "Mohema Fi Film Adeem",
     "tmdb_search_name": "Mohema Fi Film Adeem",
     "category": "cinema",
@@ -250,16 +2163,6 @@
     "lang": "ar"
   },
   {
-    "name": "أحمد نوتردام",
-    "tmdb_search_name": "أحمد نوتردام",
-    "category": "cinema",
-    "status": "completed",
-    "stoppedAt": "",
-    "myRating": 5,
-    "year_watched": 2026,
-    "lang": "ar"
-  },
-  {
     "name": "هروب اضطراري",
     "tmdb_search_name": "هروب اضطراري",
     "category": "cinema",
@@ -272,26 +2175,6 @@
   {
     "name": "من 30 سنة",
     "tmdb_search_name": "من 30 سنة",
-    "category": "cinema",
-    "status": "completed",
-    "stoppedAt": "",
-    "myRating": 8,
-    "year_watched": 2026,
-    "lang": "ar"
-  },
-  {
-    "name": "أبو شنب",
-    "tmdb_search_name": "أبو شنب",
-    "category": "cinema",
-    "status": "completed",
-    "stoppedAt": "",
-    "myRating": 5,
-    "year_watched": 2026,
-    "lang": "ar"
-  },
-  {
-    "name": "نور عيني",
-    "tmdb_search_name": "نور عيني",
     "category": "cinema",
     "status": "completed",
     "stoppedAt": "",
@@ -356,16 +2239,6 @@
     "status": "completed",
     "stoppedAt": "",
     "myRating": 5,
-    "year_watched": 2026,
-    "lang": "ar"
-  },
-  {
-    "name": "الكنز 2",
-    "tmdb_search_name": "الكنز 2",
-    "category": "cinema",
-    "status": "completed",
-    "stoppedAt": "",
-    "myRating": 8,
     "year_watched": 2026,
     "lang": "ar"
   },
@@ -435,7 +2308,7 @@
     "category": "cinema",
     "status": "completed",
     "stoppedAt": "",
-    "myRating": 0,
+    "myRating": 9,
     "year_watched": 2026,
     "lang": "en"
   },
@@ -445,7 +2318,7 @@
     "category": "cinema",
     "status": "completed",
     "stoppedAt": "",
-    "myRating": 0,
+    "myRating": 10,
     "year_watched": 2026,
     "lang": "en"
   },
@@ -465,7 +2338,7 @@
     "category": "cinema",
     "status": "completed",
     "stoppedAt": "",
-    "myRating": 0,
+    "myRating": 9,
     "year_watched": 2026,
     "lang": "en"
   },
@@ -495,7 +2368,7 @@
     "category": "cinema",
     "status": "completed",
     "stoppedAt": "",
-    "myRating": 0,
+    "myRating": 9,
     "year_watched": 2026,
     "lang": "en"
   },
@@ -522,16 +2395,6 @@
   {
     "name": "Avatar fire and Ash",
     "tmdb_search_name": "Avatar fire and Ash",
-    "category": "cinema",
-    "status": "completed",
-    "stoppedAt": "",
-    "myRating": 8,
-    "year_watched": 2026,
-    "lang": "en"
-  },
-  {
-    "name": "Demon Slayer: Kimetsu No Yaiba The Movie: Infinity Castle",
-    "tmdb_search_name": "Demon Slayer: Kimetsu No Yaiba The Movie: Infinity Castle",
     "category": "cinema",
     "status": "completed",
     "stoppedAt": "",
@@ -968,7 +2831,7 @@
     "category": "arabic_series_2026",
     "status": "completed",
     "year_watched": 2026,
-    "myRating": 9
+    "myRating": 8
   },
   {
     "name": "أيام",
@@ -1000,7 +2863,7 @@
     "category": "arabic_series_2026",
     "status": "completed",
     "year_watched": 2026,
-    "myRating": 9
+    "myRating": 8
   },
   {
     "name": "لينك",
@@ -1033,7 +2896,7 @@
     "category": "arabic_series_2026",
     "status": "completed",
     "year_watched": 2026,
-    "myRating": 9
+    "myRating": 8
   },
   {
     "name": "وتقابل حبيب",
@@ -1069,7 +2932,7 @@
     "category": "arabic_series_2026",
     "status": "completed",
     "year_watched": 2026,
-    "myRating": 9
+    "myRating": 8
   },
   {
     "name": "فرق توقيت",
@@ -1081,7 +2944,7 @@
     "category": "arabic_series_2026",
     "status": "completed",
     "year_watched": 2026,
-    "myRating": 10
+    "myRating": 8
   },
   {
     "name": "ميد تيرم",
@@ -1173,17 +3036,6 @@
     "myRating": 8
   },
   {
-    "name": "عين سحرية",
-    "tmdb_search_name": "عين سحرية",
-    "seasons": 1,
-    "episodes": 15,
-    "fallback_imdb": "7.5",
-    "category": "arabic_series_2026",
-    "status": "completed",
-    "year_watched": 2026,
-    "myRating": 0
-  },
-  {
     "name": "فن الحرب",
     "tmdb_search_name": "فن الحرب",
     "seasons": 1,
@@ -1193,20 +3045,6 @@
     "status": "completed",
     "year_watched": 2026,
     "myRating": 7
-  },
-  {
-    "name": "اولاد الراعي",
-    "tmdb_search_name": "أولاد الراعي",
-    "alt_queries": [
-      "اولاد الراعي"
-    ],
-    "seasons": 1,
-    "episodes": 30,
-    "fallback_imdb": "7.7",
-    "category": "arabic_series_2026",
-    "status": "completed",
-    "year_watched": 2026,
-    "myRating": 0
   },
   {
     "name": "علي كلاي",
@@ -1819,7 +3657,7 @@
     "category": "english_movies_2026",
     "status": "completed",
     "year_watched": 2026,
-    "myRating": 8
+    "myRating": 7
   },
   {
     "name": "Weapons",
@@ -1916,14 +3754,6 @@
     "status": "completed",
     "year_watched": 2026,
     "myRating": 7
-  },
-  {
-    "name": "Zootopia",
-    "tmdb_search_name": "Zootopia",
-    "category": "english_movies_2026",
-    "status": "completed",
-    "year_watched": 2026,
-    "myRating": 2
   },
   {
     "name": "Avatar Way Of Water",
@@ -2158,8 +3988,9 @@
     "name": "Euphoria",
     "tmdb_search_name": "Euphoria",
     "category": "english_series",
-    "status": "completed",
-    "myRating": 4
+    "status": "dropped",
+    "myRating": 4,
+    "stoppedAt": "1 Season"
   },
   {
     "name": "Spartacus",
@@ -2823,8 +4654,9 @@
     "name": "The Beginning After The End",
     "tmdb_search_name": "The Beginning After the End",
     "category": "anime",
-    "status": "completed",
-    "myRating": 5
+    "status": "dropped",
+    "myRating": 5,
+    "stoppedAt": "1 Season"
   },
   {
     "name": "Wistoria (Wand & Sword)",
