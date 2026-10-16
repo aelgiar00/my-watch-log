@@ -2,7 +2,6 @@ const TMDB_API_KEY = 'f3cefc2462aadaabd61feafa4ec78ce4';
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
-// ☁️ لو معاك لينك Firebase Realtime Database حطه هنا بين علامتين التنصيص:
 const DEFAULT_FIREBASE_URL = 'PUT_YOUR_FIREBASE_DB_URL_HERE';
 
 const container = document.getElementById('app-container');
@@ -16,7 +15,6 @@ const subBtnDropped = document.getElementById('sub-btn-dropped');
 const addFormContainer = document.getElementById('add-form-container');
 const currentCategorySpan = document.getElementById('current-category-name');
 const statusSelect = document.getElementById('new-item-status');
-const statusOptDropped = document.getElementById('status-opt-dropped');
 const stoppedInput = document.getElementById('new-item-stopped');
 const cinemaLangSelect = document.getElementById('cinema-lang-select');
 const bannerTitle = document.getElementById('banner-title');
@@ -25,11 +23,6 @@ const installAppBtn = document.getElementById('install-app-btn');
 const cloudSyncBtn = document.getElementById('cloud-sync-btn');
 const cloudStatusText = document.getElementById('cloud-status-text');
 
-// عناصر الفلترة الذكية
-const searchInput = document.getElementById('category-search-input');
-const ratingFilterSelect = document.getElementById('rating-filter-select');
-const yearFilterSelect = document.getElementById('year-filter-select');
-
 let allData = [];
 let baseJsonData = [];
 let activeCategory = 'arabic_series_2026';
@@ -37,9 +30,7 @@ let activeSubFilter = 'completed';
 let deferredPrompt = null;
 let cloudSyncStream = null;
 let lastCloudSignature = '';
-
-// كاش سريع لحفظ بيانات TMDB عشان الفلترة بالسنة والبحث والتقييم تشتغل في جزء من الثانية بدون إعادة تحميل!
-const tmdbCache = {};
+let resolvedYearsCache = {};
 
 const categoryNamesMap = {
     'arabic_series_2026': 'مسلسلات عربي',
@@ -50,13 +41,84 @@ const categoryNamesMap = {
     'cinema': 'سينما 🎟️'
 };
 
-// الأقسام اللي فيها شريط فرعي (كملتها / عايز أشوفها أو وقفتها)
-function hasSubSections(cat) {
-    return cat === 'arabic_series_2026' || cat === 'english_series' || cat === 'anime';
-}
+// ==========================================
+// 🔍 التحكم في الدوائر التفاعلية (البحث والتقييمات والسنوات)
+// ==========================================
+window.toggleSearchInput = function() {
+    const bar = document.getElementById('expandable-search-bar');
+    const btn = document.getElementById('circle-search-btn');
+    const input = document.getElementById('search-input');
+    if (!bar) return;
+
+    if (bar.style.display === 'none' || bar.style.display === '') {
+        bar.style.display = 'flex';
+        if (btn) btn.classList.add('active');
+        if (input) input.focus();
+    } else {
+        bar.style.display = 'none';
+        if (btn && (!input || !input.value.trim())) btn.classList.remove('active');
+    }
+};
+
+window.clearAndCloseSearch = function() {
+    const bar = document.getElementById('expandable-search-bar');
+    const btn = document.getElementById('circle-search-btn');
+    const input = document.getElementById('search-input');
+    if (input) input.value = '';
+    if (bar) bar.style.display = 'none';
+    if (btn) btn.classList.remove('active');
+    filterAndDisplay();
+};
+
+window.onCircleFilterChange = function() {
+    const ratingSelect = document.getElementById('filter-rating-select');
+    const yearSelect = document.getElementById('filter-year-select');
+    const ratingWrap = document.getElementById('rating-circle-wrap');
+    const yearWrap = document.getElementById('year-circle-wrap');
+    const ratingLabel = document.getElementById('rating-circle-label');
+    const yearLabel = document.getElementById('year-circle-label');
+
+    if (ratingSelect && ratingWrap && ratingLabel) {
+        if (ratingSelect.value === 'all') {
+            ratingWrap.classList.remove('active');
+            ratingLabel.innerText = 'التقييم';
+        } else {
+            ratingWrap.classList.add('active');
+            ratingLabel.innerText = ratingSelect.value === 'unrated' ? 'لم يقيم' : `${ratingSelect.value}/10`;
+        }
+    }
+
+    if (yearSelect && yearWrap && yearLabel) {
+        if (yearSelect.value === 'all') {
+            yearWrap.classList.remove('active');
+            yearLabel.innerText = 'السنة';
+        } else {
+            yearWrap.classList.add('active');
+            yearLabel.innerText = yearSelect.value;
+        }
+    }
+
+    filterAndDisplay();
+};
+
+window.resetAllCircleFilters = function() {
+    const input = document.getElementById('search-input');
+    const bar = document.getElementById('expandable-search-bar');
+    const searchBtn = document.getElementById('circle-search-btn');
+    const ratingSelect = document.getElementById('filter-rating-select');
+    const yearSelect = document.getElementById('filter-year-select');
+
+    if (input) input.value = '';
+    if (bar) bar.style.display = 'none';
+    if (searchBtn) searchBtn.classList.remove('active');
+    if (ratingSelect) ratingSelect.value = 'all';
+    if (yearSelect) yearSelect.value = 'all';
+
+    onCircleFilterChange();
+};
 
 // ==========================================
-// ☁️ نظام المزامنة السحابية اللحظية (Live Cloud Sync)
+// ☁️ نظام المزامنة السحابية اللحظية
 // ==========================================
 function getCloudDbUrl() {
     let url = localStorage.getItem('watchlog_firebase_url') || DEFAULT_FIREBASE_URL;
@@ -189,7 +251,7 @@ async function initCloudSync() {
 window.setupCloudSync = async function() {
     const currentUrl = getCloudDbUrl() || '';
     const inputUrl = prompt(
-        '☁️ للمزامنة اللحظية التلقائية بين اللاب والموبايل:\n\nانسخ رابط Firebase Realtime Database بتاعك وحطه هنا:\n\n(لو عايز تفصل السحابة امسح الرابط ودوس OK)',
+        '☁️ للمزامنة اللحظية التلقائية بين اللاب والموبايل:\n\nانسخ رابط Firebase Realtime Database بتاعك وحطه هنا:',
         currentUrl
     );
 
@@ -210,8 +272,6 @@ window.setupCloudSync = async function() {
     alert('تم ربط السحابة بنجاح! 🎉');
 };
 
-// ==========================================
-
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
@@ -228,7 +288,7 @@ if (installAppBtn) {
             }
             deferredPrompt = null;
         } else {
-            alert('لتثبيت التطبيق على موبايلك:\n- في أندرويد (Chrome): اضغط على الثلاث نقاط فوق واختار "تثبيت التطبيق / Install App".\n- في آيفون (Safari): اضغط على زر المشاركة (Share) واختار "Add to Home Screen".');
+            alert('لتثبيت التطبيق على موبايلك:\nاضغط على الثلاث نقاط في المتصفح واختار "تثبيت التطبيق / Install App".');
         }
     });
 }
@@ -246,7 +306,7 @@ function getEffectiveRating(item) {
     let savedRating = localStorage.getItem('rating_' + item.name);
     if (savedRating !== null && savedRating !== '') {
         return parseFloat(savedRating);
-    } else if (item.myRating !== undefined && item.myRating !== null && item.myRating > 0) {
+    } else if (item.myRating && item.myRating > 0) {
         return parseFloat(item.myRating);
     }
     return -1;
@@ -275,24 +335,15 @@ function updateAllCounts(currentFilteredCount = 0) {
         badge.innerText = count;
     });
 
-    // استبعاد السينما من عداد المفضلة
     const favCount = allData.filter(item => item.category !== 'cinema' && getEffectiveRating(item) >= 9).length;
     if (favCountBadge) favCountBadge.innerText = favCount;
 
-    if (hasSubSections(activeCategory)) {
+    if (activeCategory === 'anime' || activeCategory === 'english_series') {
         const compCount = allData.filter(item => item.category === activeCategory && (item.status || 'completed') === 'completed').length;
         const dropCount = allData.filter(item => item.category === activeCategory && item.status === 'dropped').length;
         
-        let compLabel = '✅ مسلسلات كملتها';
-        let dropLabel = '⏳ مسلسلات عايز أشوفها / لسه ما خلصتهاش';
-
-        if (activeCategory === 'anime') {
-            compLabel = '✅ أنميات كملتها';
-            dropLabel = '❌ أنميات وقفتها / ما شوفتهاش';
-        } else if (activeCategory === 'english_series') {
-            compLabel = '✅ مسلسلات كملتها';
-            dropLabel = '❌ مسلسلات وقفتها / ما كملتهاش';
-        }
+        const compLabel = activeCategory === 'anime' ? '✅ أنميات كملتها' : '✅ مسلسلات كملتها';
+        const dropLabel = activeCategory === 'anime' ? '❌ أنميات وقفتها' : '❌ مسلسلات وقفتها';
         
         subBtnCompleted.innerHTML = `<span>${compLabel}</span> <span class="btn-count">${compCount}</span>`;
         subBtnDropped.innerHTML = `<span>${dropLabel}</span> <span class="btn-count">${dropCount}</span>`;
@@ -300,13 +351,11 @@ function updateAllCounts(currentFilteredCount = 0) {
 
     let titleText = '';
     if (activeCategory === 'favorites') {
-        titleText = '❤️ إجمالي الأعمال المفضلة المعروضة:';
-    } else if (activeCategory === 'arabic_series_2026') {
-        titleText = activeSubFilter === 'completed' ? '📺 مسلسلات عربي كملتها:' : '⏳ مسلسلات عربي عايز أشوفها:';
+        titleText = '❤️ إجمالي الأعمال المفضلة (9 و 10):';
     } else if (activeCategory === 'anime') {
-        titleText = activeSubFilter === 'completed' ? '🎬 أنميات كملتها:' : '🛑 أنميات وقفتها:';
+        titleText = activeSubFilter === 'completed' ? '🎬 إجمالي أنميات كملتها:' : '🛑 إجمالي أنميات وقفتها:';
     } else if (activeCategory === 'english_series') {
-        titleText = activeSubFilter === 'completed' ? '📺 مسلسلات أجنبي كملتها:' : '🛑 مسلسلات أجنبي وقفتها:';
+        titleText = activeSubFilter === 'completed' ? '📺 إجمالي مسلسلات أجنبي كملتها:' : '🛑 إجمالي مسلسلات أجنبي وقفتها:';
     } else {
         titleText = `📊 إجمالي ${categoryNamesMap[activeCategory] || activeCategory}:`;
     }
@@ -323,8 +372,14 @@ function rebuildAllDataAndRender() {
     const filteredJsonData = baseJsonData.filter(item => {
         const keyWithStatus = `${item.name}_${item.category}_${item.status || 'completed'}`;
         const oldKey = `${item.name}_${item.category}`;
-        const existsInLocal = localItems.some(loc => normalizeText(loc.name) === normalizeText(item.name) && loc.category === item.category);
-        if (existsInLocal) return false;
+        // إذا كان العنصر موجوداً في localItems ولكن نسخة JSON تحتوي على صورة hardcoded (poster)، نحتفظ بالـ poster
+        const matchingLocal = localItems.find(loc => normalizeText(loc.name) === normalizeText(item.name) && loc.category === item.category);
+        if (matchingLocal) {
+            if (item.poster && !matchingLocal.poster) {
+                matchingLocal.poster = item.poster;
+            }
+            return false;
+        }
         return !deletedItems.includes(keyWithStatus) && !deletedItems.includes(oldKey);
     }).map(item => {
         const overrideKey = `${item.name}_${item.category}`;
@@ -334,19 +389,7 @@ function rebuildAllDataAndRender() {
         return item;
     });
 
-    // منع أي تكرار في الداتا المدمجة
-    const combined = [...localItems, ...filteredJsonData];
-    const uniqueSeen = new Set();
-    allData = [];
-    for (const item of combined) {
-        const uKey = `${normalizeText(item.name)}_${item.category}`;
-        if (!uniqueSeen.has(uKey)) {
-            uniqueSeen.add(uKey);
-            allData.push(item);
-        }
-    }
-
-    updateSubNavUI();
+    allData = [...localItems, ...filteredJsonData];
     filterAndDisplay();
 }
 
@@ -361,94 +404,52 @@ async function loadData() {
     }
 }
 
-// الحصول على عناصر القسم الحالي قبل تطبيق فلاتر البحث والسنة والتقييم
-function getBaseCategoryItems() {
-    if (activeCategory === 'favorites') {
-        return allData.filter(item => item.category !== 'cinema' && getEffectiveRating(item) >= 9);
-    }
-    let filteredData = allData.filter(item => item.category === activeCategory);
-    if (hasSubSections(activeCategory)) {
-        filteredData = filteredData.filter(item => (item.status || 'completed') === activeSubFilter);
-    }
-    return filteredData;
-}
-
 function filterAndDisplay() {
-    const baseItems = getBaseCategoryItems();
-    displayItems(baseItems, activeCategory === 'favorites');
-}
+    let baseList = [];
 
-// تطبيق الفلاتر الفورية (البحث بالاسم + تدريج التقييم + السنة)
-window.applyLocalFilters = function() {
-    const cards = container.querySelectorAll('.card');
-    if (cards.length === 0) return;
-
-    const searchVal = normalizeText(searchInput ? searchInput.value : '');
-    const selectedRating = ratingFilterSelect ? ratingFilterSelect.value : 'all';
-    const selectedYear = yearFilterSelect ? yearFilterSelect.value : 'all';
-
-    let visibleCount = 0;
-
-    cards.forEach(card => {
-        const itemName = normalizeText(card.dataset.name || '');
-        const itemRating = parseFloat(card.dataset.rating);
-        const itemYear = card.dataset.year || '';
-
-        let matchSearch = true;
-        if (searchVal) {
-            matchSearch = itemName.includes(searchVal);
-        }
-
-        let matchRating = true;
-        if (selectedRating !== 'all') {
-            if (selectedRating === 'unrated') {
-                matchRating = itemRating < 0;
-            } else {
-                const targetR = parseFloat(selectedRating);
-                matchRating = Math.floor(itemRating) === targetR;
-            }
-        }
-
-        let matchYear = true;
-        if (selectedYear !== 'all') {
-            matchYear = itemYear === selectedYear;
-        }
-
-        if (matchSearch && matchRating && matchYear) {
-            card.style.display = 'flex';
-            visibleCount++;
-        } else {
-            card.style.display = 'none';
-        }
-    });
-
-    bannerCount.innerText = visibleCount;
-};
-
-window.resetLocalFilters = function() {
-    if (searchInput) searchInput.value = '';
-    if (ratingFilterSelect) ratingFilterSelect.value = 'all';
-    if (yearFilterSelect) yearFilterSelect.value = 'all';
-    applyLocalFilters();
-};
-
-// تحديث قائمة السنوات ديناميكياً حسب الأعمال الموجودة في القسم المفتوح
-function populateYearDropdown(yearsList) {
-    if (!yearFilterSelect) return;
-    const currentSelected = yearFilterSelect.value;
-    const uniqueYears = Array.from(new Set(yearsList.filter(Boolean))).sort((a, b) => parseInt(b) - parseInt(a));
-    
-    let optionsHtml = '<option value="all">📅 كل السنوات</option>';
-    uniqueYears.forEach(yr => {
-        optionsHtml += `<option value="${yr}">📅 سنة ${yr}</option>`;
-    });
-    yearFilterSelect.innerHTML = optionsHtml;
-
-    if (uniqueYears.includes(currentSelected)) {
-        yearFilterSelect.value = currentSelected;
+    if (activeCategory === 'favorites') {
+        baseList = allData.filter(item => item.category !== 'cinema' && getEffectiveRating(item) >= 9);
     } else {
-        yearFilterSelect.value = 'all';
+        baseList = allData.filter(item => item.category === activeCategory);
+        if (activeCategory === 'anime' || activeCategory === 'english_series') {
+            baseList = baseList.filter(item => (item.status || 'completed') === activeSubFilter);
+        }
     }
+
+    // تطبيق فلاتر الدوائر (البحث، التقييم، السنة)
+    const searchInput = document.getElementById('search-input');
+    const ratingSelect = document.getElementById('filter-rating-select');
+    const yearSelect = document.getElementById('filter-year-select');
+
+    const searchQuery = searchInput ? normalizeText(searchInput.value) : '';
+    const selectedRating = ratingSelect ? ratingSelect.value : 'all';
+    const selectedYear = yearSelect ? yearSelect.value : 'all';
+
+    if (searchQuery) {
+        baseList = baseList.filter(item => {
+            const n1 = normalizeText(item.name);
+            const n2 = normalizeText(item.tmdb_search_name || '');
+            return n1.includes(searchQuery) || n2.includes(searchQuery);
+        });
+    }
+
+    if (selectedRating !== 'all') {
+        baseList = baseList.filter(item => {
+            const r = getEffectiveRating(item);
+            if (selectedRating === 'unrated') return r <= 0;
+            return Math.floor(r) === parseInt(selectedRating);
+        });
+    }
+
+    if (selectedYear !== 'all') {
+        baseList = baseList.filter(item => {
+            const cachedY = resolvedYearsCache[item.name + '_' + item.category] || (item.release_year ? item.release_year.toString() : '');
+            return cachedY === selectedYear;
+        });
+    }
+
+    updateAllCounts(baseList.length);
+    displayItems(baseList, activeCategory === 'favorites');
 }
 
 window.toggleItemStatus = function(encodedName, category) {
@@ -460,7 +461,7 @@ window.toggleItemStatus = function(encodedName, category) {
     const newStatus = currentStatus === 'completed' ? 'dropped' : 'completed';
     let stoppedAtVal = '';
 
-    if (newStatus === 'dropped' && category !== 'arabic_series_2026') {
+    if (newStatus === 'dropped') {
         stoppedAtVal = prompt(`وقفت "${name}" عند فين؟ (مثال: الموسم 2 أو الحلقة 5)`, targetItem.stoppedAt || '1 Season');
         if (stoppedAtVal === null) return;
     }
@@ -554,7 +555,7 @@ window.addNewItem = function() {
     document.getElementById('new-item-rating').value = '';
     stoppedInput.value = '';
 
-    if (hasSubSections(activeCategory) && status !== activeSubFilter) {
+    if ((activeCategory === 'anime' || activeCategory === 'english_series') && status !== activeSubFilter) {
         activeSubFilter = status;
         subButtons.forEach(b => {
             b.classList.toggle('active', b.dataset.subfilter === status);
@@ -657,18 +658,11 @@ function extractYearFromDate(dateStr) {
 }
 
 async function fetchSmartTMDBData(item) {
-    const cacheKey = `${item.name}_${item.category}`;
-    if (tmdbCache[cacheKey]) {
-        // لو فيه صورة hardcoded اتضافت، نضمن إنها تفضل موجودة
-        if (item.poster) tmdbCache[cacheKey].posterUrl = item.poster;
-        return tmdbCache[cacheKey];
-    }
-
     const isTV = item.category.includes('series') || item.category === 'anime';
     const type = isTV ? 'tv' : 'movie';
     const isArabicCategory = item.category.startsWith('arabic_') || (item.category === 'cinema' && item.lang === 'ar');
 
-    // ✅ لو المسلسل ليه صورة Hardcoded على جيت هاب (زي الـ 11 مسلسل الجداد)، ياخدها فوراً!
+    // ✅ أولوية قصوى للصورة المرفوعة على جيت هاب (Hardcoded Poster)
     let posterUrl = item.poster ? item.poster : null;
     let globalRating = null;
     let apiSeasons = '';
@@ -681,7 +675,7 @@ async function fetchSmartTMDBData(item) {
             const langParam = isArabicCategory ? 'ar-EG' : 'en-US';
             const directRes = await fetch(`${TMDB_BASE_URL}/${type}/${matchedId}?api_key=${TMDB_API_KEY}&language=${langParam}`);
             const directData = await directRes.json();
-            if (directData.poster_path && !item.poster) posterUrl = IMG_BASE_URL + directData.poster_path;
+            if (!posterUrl && directData.poster_path) posterUrl = IMG_BASE_URL + directData.poster_path;
             if (directData.vote_average && directData.vote_average > 0) globalRating = directData.vote_average.toFixed(1);
             
             const dateStr = directData.first_air_date || directData.release_date || '';
@@ -763,18 +757,12 @@ async function fetchSmartTMDBData(item) {
                         return r.poster_path && (t1 === normQ || t2 === normQ);
                     });
 
-                    let exactAny = resultsList.find(r => {
-                        const t1 = normalizeText(r.name || r.title);
-                        const t2 = normalizeText(r.original_name || r.original_title);
-                        return t1 === normQ || t2 === normQ;
-                    });
-
                     let anyWithPoster = resultsList.find(r => r.poster_path);
-                    let chosen = exactWithPoster || exactAny || anyWithPoster || resultsList[0];
+                    let chosen = exactWithPoster || anyWithPoster || resultsList[0];
 
                     if (chosen) {
                         bestMatch = chosen;
-                        if (chosen.poster_path || item.poster) break;
+                        if (chosen.poster_path || posterUrl) break;
                     }
                 }
             } catch (e) { console.error(e); }
@@ -782,10 +770,10 @@ async function fetchSmartTMDBData(item) {
 
         if (bestMatch) {
             matchedId = bestMatch.id;
-            if (bestMatch.poster_path && !item.poster) posterUrl = IMG_BASE_URL + bestMatch.poster_path;
+            if (!posterUrl && bestMatch.poster_path) posterUrl = IMG_BASE_URL + bestMatch.poster_path;
             if (bestMatch.vote_average && bestMatch.vote_average > 0) globalRating = bestMatch.vote_average.toFixed(1);
             const matchDate = bestMatch.first_air_date || bestMatch.release_date || '';
-            if (matchDate && !actualReleaseYear) actualReleaseYear = extractYearFromDate(matchDate);
+            if (matchDate) actualReleaseYear = extractYearFromDate(matchDate);
         }
     }
 
@@ -807,7 +795,7 @@ async function fetchSmartTMDBData(item) {
                 const detailDate = details.first_air_date || details.release_date || '';
                 if (detailDate) actualReleaseYear = extractYearFromDate(detailDate);
             }
-            if (!posterUrl && !item.poster) {
+            if (!posterUrl) {
                 if (details.poster_path) {
                     posterUrl = IMG_BASE_URL + details.poster_path;
                 } else if (details.images && details.images.posters && details.images.posters.length > 0) {
@@ -823,31 +811,29 @@ async function fetchSmartTMDBData(item) {
         actualReleaseYear = '2026';
     }
 
-    const resultObj = {
+    if (actualReleaseYear) {
+        resolvedYearsCache[item.name + '_' + item.category] = actualReleaseYear;
+    }
+
+    return {
         posterUrl: posterUrl || `https://placehold.co/500x750/1a1a24/b095f6?text=${encodeURIComponent(item.name)}`,
         globalRating: globalRating || item.fallback_imdb || '7.5',
         apiSeasons: apiSeasons || item.seasons || '',
         apiEpisodes: apiEpisodes || item.episodes || '',
         releaseYear: actualReleaseYear
     };
-
-    tmdbCache[cacheKey] = resultObj;
-    return resultObj;
 }
 
 async function displayItems(items, isFavView = false) {
-    updateAllCounts(items.length);
-
     if (items.length === 0) {
-        populateYearDropdown([]);
         const emptyMsg = isFavView 
             ? 'لا توجد أعمال في المفضلة حالياً.. قيّم أي عمل بـ 9 أو 10 ليظهر هنا ❤️' 
-            : 'لا توجد أعمال في هذا القسم حالياً 🍿';
+            : 'لا توجد أعمال مطابقة حالياً 🍿';
         container.innerHTML = `<p style="text-align:center; width:100%; color:var(--text-muted); font-size:1.2em;">${emptyMsg}</p>`;
         return;
     }
 
-    container.innerHTML = '<p style="text-align:center; width:100%; color:var(--lavender-accent); font-size:1.3em;">جاري تحميل البوسترات الأصلية وسنوات الإصدار... 🚀</p>';
+    container.innerHTML = '<p style="text-align:center; width:100%; color:var(--lavender-accent); font-size:1.3em;">جاري التحميل... 🚀</p>';
     
     const itemsWithRatings = items.map(item => {
         return { ...item, finalRating: getEffectiveRating(item) };
@@ -855,42 +841,27 @@ async function displayItems(items, isFavView = false) {
 
     itemsWithRatings.sort((a, b) => b.finalRating - a.finalRating);
 
-    const collectedYears = [];
-
     const fetchPromises = itemsWithRatings.map(async (item) => {
         const tmdbInfo = await fetchSmartTMDBData(item);
-        if (tmdbInfo.releaseYear) collectedYears.push(tmdbInfo.releaseYear);
 
-        let statusBadge = '';
-        if (item.status === 'completed' || !item.status) {
-            statusBadge = '<span class="status-badge status-completed">✓ اكتمل</span>';
-        } else if (item.category === 'arabic_series_2026') {
-            statusBadge = `<span class="status-badge status-watchlist">⏳ عايز أشوفه ${item.stoppedAt ? '(' + item.stoppedAt + ')' : ''}</span>`;
-        } else {
-            statusBadge = `<span class="status-badge status-dropped">✗ وقف عند ${item.stoppedAt || ''}</span>`;
-        }
+        let statusBadge = item.status === 'completed' 
+            ? '<span class="status-badge status-completed">✓ اكتمل</span>' 
+            : `<span class="status-badge status-dropped">✗ وقف عند ${item.stoppedAt || ''}</span>`;
 
-        const canToggleStatus = hasSubSections(item.category);
-        let toggleLabel = '';
-        if (canToggleStatus) {
-            if (item.status === 'dropped') {
-                toggleLabel = '↪️ نقل لـ كملتها';
-            } else {
-                toggleLabel = item.category === 'arabic_series_2026' ? '⏳ نقل لـ عايز أشوفها' : '⏸️ نقل لـ وقفتها';
-            }
-        }
-
+        const canToggleStatus = (item.category === 'anime' || item.category === 'english_series');
         const toggleBtnHtml = canToggleStatus 
-            ? `<button class="toggle-status-btn" onclick="toggleItemStatus('${encodeURIComponent(item.name)}', '${item.category}')">${toggleLabel}</button>`
+            ? `<button class="toggle-status-btn" onclick="toggleItemStatus('${encodeURIComponent(item.name)}', '${item.category}')">
+                ${item.status === 'dropped' ? '↪️ نقل لـ كملتها' : '⏸️ نقل لـ وقفتها'}
+               </button>`
             : '';
             
-        const hasValidRating = item.finalRating > 0;
+        const hasValidRating = item.finalRating >= 0;
         const displayRating = hasValidRating ? item.finalRating : 'لم يقيم';
         const safeId = encodeURIComponent(item.name).replace(/[^a-zA-Z0-9]/g, '_');
         const fallbackImg = `https://placehold.co/500x750/1a1a24/b095f6?text=${encodeURIComponent(item.name)}`;
 
         return `
-            <div class="card" data-name="${item.name}" data-rating="${hasValidRating ? item.finalRating : -1}" data-year="${tmdbInfo.releaseYear || ''}">
+            <div class="card">
                 <button class="delete-btn" title="حذف نهائي" onclick="deleteItem('${encodeURIComponent(item.name)}', '${item.category}')">✖</button>
                 ${statusBadge}
                 ${toggleBtnHtml}
@@ -920,20 +891,11 @@ async function displayItems(items, isFavView = false) {
 
     const htmlArray = await Promise.all(fetchPromises);
     container.innerHTML = htmlArray.join('');
-
-    // تحديث قائمة السنوات وتطبيق أي فلاتر مختارة
-    populateYearDropdown(collectedYears);
-    applyLocalFilters();
 }
 
 function updateSubNavUI() {
-    if (hasSubSections(activeCategory)) {
+    if (activeCategory === 'anime' || activeCategory === 'english_series') {
         subNav.style.display = 'flex';
-        if (statusOptDropped) {
-            statusOptDropped.innerText = activeCategory === 'arabic_series_2026' 
-                ? 'عايز أشوفه / لسه ما خلصتوش (⏳)' 
-                : 'لم يكتمل / وقفته (✗)';
-        }
     } else {
         subNav.style.display = 'none';
     }
@@ -947,7 +909,6 @@ favBtn.addEventListener('click', () => {
     subNav.style.display = 'none';
     addFormContainer.style.display = 'none';
     
-    resetLocalFilters();
     filterAndDisplay();
 });
 
@@ -965,7 +926,7 @@ buttons.forEach(btn => {
         updateSubNavUI();
         cinemaLangSelect.style.display = (activeCategory === 'cinema') ? 'block' : 'none';
 
-        if (hasSubSections(activeCategory)) {
+        if (activeCategory === 'anime' || activeCategory === 'english_series') {
             statusSelect.value = activeSubFilter;
             stoppedInput.style.display = (activeSubFilter === 'dropped') ? 'block' : 'none';
         } else {
@@ -973,7 +934,6 @@ buttons.forEach(btn => {
             stoppedInput.style.display = 'none';
         }
         
-        resetLocalFilters();
         filterAndDisplay();
     });
 });
@@ -987,7 +947,6 @@ subButtons.forEach(subBtn => {
         statusSelect.value = activeSubFilter;
         stoppedInput.style.display = (activeSubFilter === 'dropped') ? 'block' : 'none';
 
-        resetLocalFilters();
         filterAndDisplay();
     });
 });
