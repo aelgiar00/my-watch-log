@@ -32,7 +32,7 @@ h1, h2, h3, .movie-title {
 
 header {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
@@ -164,6 +164,35 @@ header {
     gap: 14px;
 }
 
+.clear-logo-badge {
+    width: 58px;
+    height: 58px;
+    background: linear-gradient(135deg, #252038 0%, #0d0d14 100%);
+    border: 2.5px solid var(--lavender-accent);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 18px rgba(176, 149, 246, 0.5);
+    flex-shrink: 0;
+}
+
+.clear-logo-badge .play-triangle {
+    color: var(--lavender-accent);
+    font-size: 22px;
+    line-height: 1;
+    filter: drop-shadow(0 0 6px rgba(176, 149, 246, 0.8));
+}
+
+.clear-logo-badge .wl-text {
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    margin-top: 2px;
+}
+
 .main-logo {
     width: 56px;
     height: 56px;
@@ -240,11 +269,11 @@ nav {
     display: flex;
     justify-content: center;
     gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     padding: 10px;
     background: rgba(176, 149, 246, 0.05);
     border-radius: 15px;
-    max-width: 600px;
+    max-width: 550px;
     margin-left: auto;
     margin-right: auto;
     border: 1px solid rgba(176, 149, 246, 0.2);
@@ -281,16 +310,16 @@ nav {
     background-color: var(--card-bg);
     border: 1px dashed var(--lavender-accent);
     border-radius: 15px;
-    padding: 16px;
+    padding: 14px;
     max-width: 850px;
-    margin: 0 auto 18px auto;
+    margin: 0 auto 14px auto;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
 .add-new-form h3 {
-    margin-top: 0;
+    margin: 0 0 10px 0;
     text-align: center;
-    font-size: 1.1em;
+    font-size: 1.05em;
 }
 
 .form-group {
@@ -311,6 +340,7 @@ nav {
     min-width: 130px;
     font-weight: bold;
     font-size: 14px;
+    height: auto !important;
 }
 
 .form-group input:focus, .form-group select:focus {
@@ -334,103 +364,102 @@ nav {
     transform: translateY(-2px);
 }
 
-/* 🔍 تصميم شريط البحث والفلاتر الذكية (التقييم + السنة + السيرش) */
-.smart-filters-bar {
-    background: linear-gradient(135deg, rgba(26, 26, 36, 0.95) 0%, rgba(18, 14, 31, 0.95) 100%);
-    border: 1px solid rgba(176, 149, 246, 0.35);
-    border-radius: 16px;
-    padding: 12px 16px;
+/* إزالة المساحة الفاضية فوق وتحت السيرش والفلاتر نهائياً */
+.search-filter-container,
+.search-container,
+.filters-container,
+.search-box,
+.filter-bar,
+.controls-container,
+.search-section,
+div:has(> input[placeholder*="ابحث"]),
+div:has(> div > input[placeholder*="ابحث"]) {
+    background-color: var(--card-bg);
+    border: 1px solid #2a2a3a;
+    border-radius: 15px;
+    padding: 12px !important;
+    margin: 0 auto 14px auto !important;
     max-width: 850px;
-    margin: 0 auto 20px auto;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: fit-content !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: stretch !important;
+    gap: 10px !important;
 }
 
-.search-box-wrapper {
-    position: relative;
-    flex: 1 1 260px;
-    display: flex;
-    align-items: center;
+.search-filter-container > *,
+.search-container > *,
+.filters-container > *,
+div:has(> input[placeholder*="ابحث"]) > * {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    flex: 0 0 auto !important;
 }
 
-.search-box-wrapper .search-icon {
-    position: absolute;
-    right: 12px;
-    font-size: 1em;
-    pointer-events: none;
-}
-
-.search-box-wrapper input {
+input[placeholder*="ابحث"],
+#search-input {
     width: 100%;
-    padding: 10px 38px 10px 12px;
-    border-radius: 12px;
+    padding: 10px 14px !important;
+    margin: 0 !important;
+    border-radius: 10px;
     border: 1px solid #333;
     background-color: var(--bg-dark);
-    color: var(--text-main);
+    color: white;
     font-weight: bold;
-    font-size: 0.9em;
+    font-size: 14px;
     outline: none;
-    transition: 0.3s;
+    height: 42px !important;
+    min-height: 0 !important;
+    flex: 0 0 auto !important;
 }
 
-.search-box-wrapper input:focus {
+input[placeholder*="ابحث"]:focus,
+#search-input:focus {
     border-color: var(--lavender-accent);
-    box-shadow: 0 0 10px rgba(176, 149, 246, 0.25);
 }
 
-.filter-selects-wrapper {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    flex: 1 1 auto;
-    justify-content: flex-end;
+.filter-controls,
+.search-filters-row,
+div:has(> input[placeholder*="ابحث"]) > div {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: auto !important;
+    min-height: 0 !important;
+    flex: 0 0 auto !important;
 }
 
-.filter-selects-wrapper select {
-    padding: 10px 14px;
-    border-radius: 12px;
-    border: 1px solid rgba(176, 149, 246, 0.4);
+.filter-controls select,
+.filter-controls button,
+.search-filters-row select,
+.search-filters-row button,
+div:has(> input[placeholder*="ابحث"]) select,
+div:has(> input[placeholder*="ابحث"]) button {
+    height: 40px !important;
+    min-height: 0 !important;
+    padding: 6px 12px !important;
+    margin: 0 !important;
+    border-radius: 10px;
+    border: 1px solid #333;
     background-color: var(--bg-dark);
-    color: var(--lavender-accent);
-    font-weight: bold;
-    font-size: 0.88em;
-    cursor: pointer;
-    outline: none;
-    transition: 0.3s;
-    min-width: 140px;
-}
-
-.filter-selects-wrapper select:hover, .filter-selects-wrapper select:focus {
-    border-color: var(--lavender-accent);
-    background-color: rgba(176, 149, 246, 0.08);
-}
-
-.reset-filters-btn {
-    background-color: rgba(255, 255, 255, 0.06);
-    color: var(--text-main);
-    border: 1px solid #444;
-    padding: 10px 14px;
-    border-radius: 12px;
-    cursor: pointer;
+    color: white;
     font-weight: bold;
     font-size: 0.85em;
-    transition: 0.2s;
-}
-
-.reset-filters-btn:hover {
-    background-color: var(--lavender-accent);
-    color: var(--bg-dark);
-    border-color: var(--lavender-accent);
+    flex: 1 1 auto;
 }
 
 .section-stats-wrapper {
     display: flex;
     justify-content: center;
-    margin: 0 auto 20px auto;
+    margin: 0 auto 18px auto;
     max-width: 1200px;
 }
 
@@ -546,7 +575,6 @@ nav {
 
 .status-completed { border-color: #4CAF50; color: #4CAF50; }
 .status-dropped { border-color: #F44336; color: #F44336; }
-.status-watchlist { border-color: #ffb300; color: #ffb300; }
 
 .toggle-status-btn {
     position: absolute;
@@ -664,6 +692,17 @@ nav {
         width: 44px;
         height: 44px;
     }
+    .clear-logo-badge {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+    }
+    .clear-logo-badge .play-triangle {
+        font-size: 18px;
+    }
+    .clear-logo-badge .wl-text {
+        font-size: 9px;
+    }
     .filter-btn {
         padding: 7px 12px;
         font-size: 0.82em;
@@ -675,17 +714,6 @@ nav {
     }
     .form-group input, .form-group select, .form-group button {
         width: 100%;
-    }
-    .smart-filters-bar {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .filter-selects-wrapper {
-        width: 100%;
-    }
-    .filter-selects-wrapper select {
-        flex: 1;
-        min-width: 110px;
     }
     #app-container {
         grid-template-columns: repeat(2, 1fr);
