@@ -13,14 +13,13 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="WatchLog">
     
-    <!-- أيقونة التاب والموبايل (بتتولد تلقائياً بتصميم سينمائي 3D فخم) -->
     <link rel="icon" id="dynamic-favicon" type="image/png" href="">
     <link rel="apple-touch-icon" id="dynamic-apple-icon" href="">
 
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 
-    <!-- سكريبت رسم وتوليد اللوجو السينمائي الاحترافي (3D Cinema Clapperboard & Neon Play) -->
+    <!-- سكريبت رسم وتوليد اللوجو السينمائي الاحترافي -->
     <script>
         (function generatePremiumCinemaIcon() {
             function createCinemaIcon(size) {
@@ -28,12 +27,11 @@
                 canvas.width = size;
                 canvas.height = size;
                 const ctx = canvas.getContext('2d');
-                const s = size / 512; // معامل القياس لضمان أعلى دقة
+                const s = size / 512;
 
                 ctx.save();
                 ctx.scale(s, s);
 
-                // 1. الخلفية الفخمة (تدرج ليلي سينمائي عميق)
                 const bgGrad = ctx.createRadialGradient(256, 200, 30, 256, 256, 360);
                 bgGrad.addColorStop(0, '#2a1f4a');
                 bgGrad.addColorStop(0.6, '#130f24');
@@ -41,7 +39,6 @@
                 ctx.fillStyle = bgGrad;
                 ctx.fillRect(0, 0, 512, 512);
 
-                // 2. هالة نيون خلفية ناعمة في المنتصف (Safe Zone)
                 const glowGrad = ctx.createRadialGradient(256, 265, 10, 256, 265, 180);
                 glowGrad.addColorStop(0, 'rgba(176, 149, 246, 0.35)');
                 glowGrad.addColorStop(1, 'rgba(176, 149, 246, 0)');
@@ -50,7 +47,6 @@
                 ctx.arc(256, 265, 180, 0, Math.PI * 2);
                 ctx.fill();
 
-                // 3. رسم بكرتين السينما العلويتين (Film Reels) بتصميم الماسك الأصلي المحسن
                 function drawReel(cx, cy, radius) {
                     ctx.save();
                     ctx.shadowColor = 'rgba(176, 149, 246, 0.6)';
@@ -65,14 +61,12 @@
                     ctx.arc(cx, cy, radius, 0, Math.PI * 2);
                     ctx.fill();
 
-                    // التجويف الداخلي للبكرة
                     ctx.shadowBlur = 0;
                     ctx.fillStyle = '#130f24';
                     ctx.beginPath();
                     ctx.arc(cx, cy, radius * 0.32, 0, Math.PI * 2);
                     ctx.fill();
 
-                    // فتحات بكرة السينما الدائرية
                     for (let i = 0; i < 4; i++) {
                         const angle = (i * Math.PI) / 2 + Math.PI / 4;
                         const hx = cx + Math.cos(angle) * (radius * 0.64);
@@ -84,11 +78,9 @@
                     ctx.restore();
                 }
 
-                // وضع البكرتين في منطقة آمنة تماماً من القص الدائري
                 drawReel(188, 165, 48);
                 drawReel(324, 165, 48);
 
-                // 4. جسم الكاميرا / الشاشة السينمائية (Clapperboard / Screen Body)
                 ctx.save();
                 ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
                 ctx.shadowBlur = 28;
@@ -102,7 +94,6 @@
                 ctx.roundRect(126, 215, 260, 155, 36);
                 ctx.fill();
 
-                // إطار نيون لافندر متوهج حول الشاشة
                 ctx.shadowColor = '#b095f6';
                 ctx.shadowBlur = 18;
                 ctx.shadowOffsetY = 0;
@@ -115,7 +106,6 @@
                 ctx.stroke();
                 ctx.restore();
 
-                // 5. شريط الكلاكيت العلوي المزخرف (Clapperboard Stripes)
                 ctx.save();
                 ctx.beginPath();
                 ctx.roundRect(131, 220, 250, 32, [30, 30, 0, 0]);
@@ -136,7 +126,6 @@
                 }
                 ctx.restore();
 
-                // خط فاصل تحت الكلاكيت
                 ctx.strokeStyle = 'rgba(176, 149, 246, 0.4)';
                 ctx.lineWidth = 3;
                 ctx.beginPath();
@@ -144,7 +133,6 @@
                 ctx.lineTo(381, 252);
                 ctx.stroke();
 
-                // 6. مثلث التشغيل الذهبي/الأبيض ثلاثي الأبعاد في قلب الشاشة
                 ctx.save();
                 ctx.shadowColor = 'rgba(255, 215, 0, 0.65)';
                 ctx.shadowBlur = 22;
@@ -180,7 +168,7 @@
                 document.getElementById('dynamic-apple-icon').href = icon512;
 
                 const dynamicManifest = {
-                    "id": "/watchlog-pwa-v2",
+                    "id": "/watchlog-pwa-v4",
                     "name": "My Watch Log",
                     "short_name": "WatchLog",
                     "description": "الأرشيف الشخصي للأفلام والمسلسلات والأنمي",
@@ -208,16 +196,18 @@
 </head>
 <body>
     <header>
-        <!-- الشريط العلوي للأدوات والمفضلة -->
         <div class="top-bar">
             <div class="data-actions-bar">
-                <button id="install-app-btn" class="action-header-btn install-btn" style="display: none;" title="تثبيت التطبيق على جهازك">
-                    📲 تثبيت كـ App رسمي
+                <button id="cloud-sync-btn" onclick="setupCloudSync()" class="action-header-btn cloud-btn" title="ربط اللاب والموبايل ببعض لحظياً بدون ملفات">
+                    ☁️ <span id="cloud-status-text">ربط السحابة (مزامنة لحظية)</span>
                 </button>
-                <button onclick="exportFullDataJSON()" class="action-header-btn save-json-btn" title="تحميل ملف data.json بكل تعديلاتك">
+                <button id="install-app-btn" class="action-header-btn install-btn" style="display: none;" title="تثبيت التطبيق على جهازك">
+                    📲 تثبيت كـ App
+                </button>
+                <button onclick="exportFullDataJSON()" class="action-header-btn save-json-btn" title="نسخة احتياطية كملف JSON">
                     💾 حفظ JSON
                 </button>
-                <button onclick="document.getElementById('import-json-input').click()" class="action-header-btn import-btn" title="رفع ملف data.json لمزامنة التعديلات على هذا الجهاز">
+                <button onclick="document.getElementById('import-json-input').click()" class="action-header-btn import-btn" title="رفع ملف data.json">
                     📂 استيراد JSON
                 </button>
                 <input type="file" id="import-json-input" accept=".json" style="display: none;" onchange="importDataJSON(event)">
@@ -235,7 +225,6 @@
             </button>
         </div>
 
-        <!-- اللوجو السينمائي الفيكتور الفخم بجوار العنوان -->
         <div class="logo-container">
             <svg class="main-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -255,15 +244,12 @@
                     </linearGradient>
                 </defs>
                 <rect width="92" height="92" x="4" y="4" rx="22" fill="url(#bgGrad)" stroke="url(#lavGrad)" stroke-width="4"/>
-                <!-- بكرات السينما -->
                 <circle cx="34" cy="27" r="11" fill="url(#lavGrad)"/>
                 <circle cx="34" cy="27" r="4" fill="#130f24"/>
                 <circle cx="66" cy="27" r="11" fill="url(#lavGrad)"/>
                 <circle cx="66" cy="27" r="4" fill="#130f24"/>
-                <!-- شاشة العرض والكلاكيت -->
                 <rect x="20" y="42" width="60" height="38" rx="9" fill="#120e21" stroke="url(#lavGrad)" stroke-width="3.5"/>
                 <line x1="20" y1="51" x2="80" y2="51" stroke="#b095f6" stroke-width="2" stroke-opacity="0.5"/>
-                <!-- مثلث التشغيل الذهبي -->
                 <polygon points="43,56 43,72 60,64" fill="url(#goldGrad)"/>
             </svg>
             <h1>My Watch Log</h1>
@@ -281,8 +267,8 @@
         <button class="filter-btn" data-filter="cinema"><span class="btn-label">🎟️ سينما</span></button>
     </nav>
 
-    <!-- القسم الفرعي (للمسلسلات الأجنبي والأنمي) -->
-    <div id="sub-nav" class="sub-nav" style="display: none;">
+    <!-- القسم الفرعي (يظهر في المسلسلات العربي، المسلسلات الأجنبي، والأنمي) -->
+    <div id="sub-nav" class="sub-nav">
         <button id="sub-btn-completed" class="sub-filter-btn active" data-subfilter="completed"></button>
         <button id="sub-btn-dropped" class="sub-filter-btn" data-subfilter="dropped"></button>
     </div>
@@ -299,12 +285,43 @@
             </select>
 
             <select id="new-item-status">
-                <option value="completed">اكتمل المشاهدة (✓)</option>
-                <option value="dropped">لم يكتمل (✗)</option>
+                <option value="completed" id="status-opt-completed">اكتمل المشاهدة (✓)</option>
+                <option value="dropped" id="status-opt-dropped">عايز أشوفه / لم يكتمل (⏳)</option>
             </select>
-            <input type="text" id="new-item-stopped" placeholder="وقفت فين؟ (مثال: الموسم التاني)" style="display:none;">
+            <input type="text" id="new-item-stopped" placeholder="ملاحظة أو وقفت فين؟ (اختياري)" style="display:none;">
             <input type="number" id="new-item-rating" min="0" max="10" step="0.5" placeholder="تقييمك (من 10)">
             <button onclick="addNewItem()">إضافة وبحث تلقائي 🔍</button>
+        </div>
+    </div>
+
+    <!-- شريط البحث والفلاتر الذكية (تقييم + سنة + بحث بالاسم) -->
+    <div class="smart-filters-bar">
+        <div class="search-box-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="category-search-input" placeholder="ابحث عن اسم عمل في هذا القسم..." oninput="applyLocalFilters()">
+        </div>
+        
+        <div class="filter-selects-wrapper">
+            <select id="rating-filter-select" onchange="applyLocalFilters()">
+                <option value="all">⭐ كل التقييمات</option>
+                <option value="10">⭐ تقييم 10 / 10</option>
+                <option value="9">⭐ تقييم 9 / 10</option>
+                <option value="8">⭐ تقييم 8 / 10</option>
+                <option value="7">⭐ تقييم 7 / 10</option>
+                <option value="6">⭐ تقييم 6 / 10</option>
+                <option value="5">⭐ تقييم 5 / 10</option>
+                <option value="4">⭐ تقييم 4 / 10</option>
+                <option value="3">⭐ تقييم 3 / 10</option>
+                <option value="2">⭐ تقييم 2 / 10</option>
+                <option value="1">⭐ تقييم 1 / 10</option>
+                <option value="unrated">🌑 لم يقيم بعد</option>
+            </select>
+
+            <select id="year-filter-select" onchange="applyLocalFilters()">
+                <option value="all">📅 كل السنوات</option>
+            </select>
+
+            <button class="reset-filters-btn" onclick="resetLocalFilters()" title="إلغاء الفلاتر">🔄 الكل</button>
         </div>
     </div>
 
