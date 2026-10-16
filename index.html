@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>My Watch Log</title>
     
-    <!-- إعدادات تحويل الموقع إلى تطبيق موبايل مستقل (PWA) -->
     <link rel="manifest" id="my-manifest" href="manifest.json">
     <meta name="theme-color" content="#120e1f">
     <meta name="mobile-web-app-capable" content="yes">
@@ -19,7 +18,6 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 
-    <!-- سكريبت رسم وتوليد اللوجو السينمائي الاحترافي -->
     <script>
         (function generatePremiumCinemaIcon() {
             function createCinemaIcon(size) {
@@ -168,7 +166,7 @@
                 document.getElementById('dynamic-apple-icon').href = icon512;
 
                 const dynamicManifest = {
-                    "id": "/watchlog-pwa-v4",
+                    "id": "/watchlog-pwa-v3",
                     "name": "My Watch Log",
                     "short_name": "WatchLog",
                     "description": "الأرشيف الشخصي للأفلام والمسلسلات والأنمي",
@@ -267,8 +265,8 @@
         <button class="filter-btn" data-filter="cinema"><span class="btn-label">🎟️ سينما</span></button>
     </nav>
 
-    <!-- القسم الفرعي (يظهر في المسلسلات العربي، المسلسلات الأجنبي، والأنمي) -->
-    <div id="sub-nav" class="sub-nav">
+    <!-- القسم الفرعي (للمسلسلات الأجنبي والأنمي) -->
+    <div id="sub-nav" class="sub-nav" style="display: none;">
         <button id="sub-btn-completed" class="sub-filter-btn active" data-subfilter="completed"></button>
         <button id="sub-btn-dropped" class="sub-filter-btn" data-subfilter="dropped"></button>
     </div>
@@ -285,43 +283,83 @@
             </select>
 
             <select id="new-item-status">
-                <option value="completed" id="status-opt-completed">اكتمل المشاهدة (✓)</option>
-                <option value="dropped" id="status-opt-dropped">عايز أشوفه / لم يكتمل (⏳)</option>
+                <option value="completed">اكتمل المشاهدة (✓)</option>
+                <option value="dropped">لم يكتمل (✗)</option>
             </select>
-            <input type="text" id="new-item-stopped" placeholder="ملاحظة أو وقفت فين؟ (اختياري)" style="display:none;">
+            <input type="text" id="new-item-stopped" placeholder="وقفت فين؟ (مثال: الموسم التاني)" style="display:none;">
             <input type="number" id="new-item-rating" min="0" max="10" step="0.5" placeholder="تقييمك (من 10)">
             <button onclick="addNewItem()">إضافة وبحث تلقائي 🔍</button>
         </div>
     </div>
 
-    <!-- شريط البحث والفلاتر الذكية (تقييم + سنة + بحث بالاسم) -->
-    <div class="smart-filters-bar">
-        <div class="search-box-wrapper">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="category-search-input" placeholder="ابحث عن اسم عمل في هذا القسم..." oninput="applyLocalFilters()">
+    <!-- شريط الدوائر التفاعلية للبحث والفلترة (بدون بوردر مربع) -->
+    <div class="circle-tools-wrapper">
+        <div class="circle-tools-row">
+            <!-- دائرة البحث -->
+            <button type="button" id="circle-search-btn" class="circle-tool-btn" onclick="toggleSearchInput()" title="بحث بالاسم">
+                <span class="circle-icon">🔍</span>
+                <span class="circle-label">بحث</span>
+            </button>
+
+            <!-- دائرة التقييمات -->
+            <div class="circle-select-wrapper" id="rating-circle-wrap" title="فلترة بالتقييم">
+                <div class="circle-tool-btn">
+                    <span class="circle-icon">⭐</span>
+                    <span class="circle-label" id="rating-circle-label">التقييم</span>
+                </div>
+                <select id="filter-rating-select" onchange="onCircleFilterChange()">
+                    <option value="all">كل التقييمات</option>
+                    <option value="10">⭐ 10 / 10</option>
+                    <option value="9">⭐ 9 / 10</option>
+                    <option value="8">⭐ 8 / 10</option>
+                    <option value="7">⭐ 7 / 10</option>
+                    <option value="6">⭐ 6 / 10</option>
+                    <option value="5">⭐ 5 / 10</option>
+                    <option value="4">⭐ 4 / 10</option>
+                    <option value="3">⭐ 3 / 10</option>
+                    <option value="2">⭐ 2 / 10</option>
+                    <option value="1">⭐ 1 / 10</option>
+                    <option value="unrated">لم يقيم</option>
+                </select>
+            </div>
+
+            <!-- دائرة السنوات -->
+            <div class="circle-select-wrapper" id="year-circle-wrap" title="فلترة بالسنة">
+                <div class="circle-tool-btn">
+                    <span class="circle-icon">📅</span>
+                    <span class="circle-label" id="year-circle-label">السنة</span>
+                </div>
+                <select id="filter-year-select" onchange="onCircleFilterChange()">
+                    <option value="all">كل السنوات</option>
+                    <option value="2026">2026</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                    <option value="2020">2020</option>
+                    <option value="2019">2019</option>
+                    <option value="2018">2018</option>
+                    <option value="2017">2017</option>
+                    <option value="2016">2016</option>
+                    <option value="2015">2015</option>
+                    <option value="2014">2014</option>
+                    <option value="2013">2013</option>
+                    <option value="2012">2012</option>
+                </select>
+            </div>
+
+            <!-- دائرة إعادة الضبط (الكل) -->
+            <button type="button" class="circle-tool-btn reset-circle-btn" onclick="resetAllCircleFilters()" title="إظهار الكل">
+                <span class="circle-icon">🔄</span>
+                <span class="circle-label">الكل</span>
+            </button>
         </div>
-        
-        <div class="filter-selects-wrapper">
-            <select id="rating-filter-select" onchange="applyLocalFilters()">
-                <option value="all">⭐ كل التقييمات</option>
-                <option value="10">⭐ تقييم 10 / 10</option>
-                <option value="9">⭐ تقييم 9 / 10</option>
-                <option value="8">⭐ تقييم 8 / 10</option>
-                <option value="7">⭐ تقييم 7 / 10</option>
-                <option value="6">⭐ تقييم 6 / 10</option>
-                <option value="5">⭐ تقييم 5 / 10</option>
-                <option value="4">⭐ تقييم 4 / 10</option>
-                <option value="3">⭐ تقييم 3 / 10</option>
-                <option value="2">⭐ تقييم 2 / 10</option>
-                <option value="1">⭐ تقييم 1 / 10</option>
-                <option value="unrated">🌑 لم يقيم بعد</option>
-            </select>
 
-            <select id="year-filter-select" onchange="applyLocalFilters()">
-                <option value="all">📅 كل السنوات</option>
-            </select>
-
-            <button class="reset-filters-btn" onclick="resetLocalFilters()" title="إلغاء الفلاتر">🔄 الكل</button>
+        <!-- خانة كتابة البحث (تظهر بنعومة عند الضغط على دائرة البحث فقط) -->
+        <div id="expandable-search-bar" class="expandable-search-bar" style="display: none;">
+            <input type="text" id="search-input" placeholder="اكتب اسم العمل للبحث الفوري..." oninput="onCircleFilterChange()">
+            <button type="button" class="close-search-btn" onclick="clearAndCloseSearch()">✖</button>
         </div>
     </div>
 
