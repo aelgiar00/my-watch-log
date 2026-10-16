@@ -335,24 +335,19 @@ function updateAllCounts(currentFilteredCount = 0) {
         badge.innerText = count;
     });
 
- // تحديث النصوص وإظهار الشريط الفرعي لمسلسلات عربي والمسلسلات الأجنبي والأنمي
-function updateSubNavUI() {
-    if (activeCategory === 'anime') {
-        subNav.style.display = 'flex';
-        subBtnCompleted.innerText = '✅ أنميات كملتها';
-        subBtnDropped.innerText = '❌ أنميات وقفتها';
-    } else if (activeCategory === 'english_series') {
-        subNav.style.display = 'flex';
-        subBtnCompleted.innerText = '✅ مسلسلات كملتها';
-        subBtnDropped.innerText = '❌ مسلسلات وقفتها';
-    } else if (activeCategory === 'arabic_series_2026') {
-        subNav.style.display = 'flex';
-        subBtnCompleted.innerHTML = '<span>✅ مسلسلات شوفتها</span> <span class="btn-count">0</span>';
-        subBtnDropped.innerHTML = '<span>⏳ مسلسلات عايز أشوفها</span> <span class="btn-count">0</span>';
-    } else {
-        subNav.style.display = 'none';
+    const favCount = allData.filter(item => item.category !== 'cinema' && getEffectiveRating(item) >= 9).length;
+    if (favCountBadge) favCountBadge.innerText = favCount;
+
+    if (activeCategory === 'anime' || activeCategory === 'english_series') {
+        const compCount = allData.filter(item => item.category === activeCategory && (item.status || 'completed') === 'completed').length;
+        const dropCount = allData.filter(item => item.category === activeCategory && item.status === 'dropped').length;
+        
+        const compLabel = activeCategory === 'anime' ? '✅ أنميات كملتها' : '✅ مسلسلات كملتها';
+        const dropLabel = activeCategory === 'anime' ? '❌ أنميات وقفتها' : '❌ مسلسلات وقفتها';
+        
+        subBtnCompleted.innerHTML = `<span>${compLabel}</span> <span class="btn-count">${compCount}</span>`;
+        subBtnDropped.innerHTML = `<span>${dropLabel}</span> <span class="btn-count">${dropCount}</span>`;
     }
-}
 
     let titleText = '';
     if (activeCategory === 'favorites') {
