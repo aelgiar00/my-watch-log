@@ -42,6 +42,22 @@ const categoryNamesMap = {
 };
 
 // ==========================================
+// 📅 تعبئة قائمة السنين تلقائياً من 2026 لحد 2005
+// ==========================================
+function populateYearsFrom2026To2005() {
+    const yearSelect = document.getElementById('filter-year-select');
+    if (!yearSelect) return;
+
+    const currentVal = yearSelect.value || 'all';
+    let optionsHtml = '<option value="all">كل السنوات</option>';
+    for (let y = 2026; y >= 2005; y--) {
+        optionsHtml += `<option value="${y}">${y}</option>`;
+    }
+    yearSelect.innerHTML = optionsHtml;
+    yearSelect.value = currentVal;
+}
+
+// ==========================================
 // 🔍 التحكم في الدوائر التفاعلية (البحث والتقييمات والسنوات)
 // ==========================================
 window.toggleSearchInput = function() {
@@ -294,7 +310,7 @@ if (installAppBtn) {
 }
 
 statusSelect.addEventListener('change', function() {
-    if(this.value === 'dropped') {
+    if (this.value === 'dropped' && activeCategory !== 'arabic_series_2026') {
         stoppedInput.style.display = 'block';
     } else {
         stoppedInput.style.display = 'none';
@@ -322,6 +338,9 @@ function normalizeText(text) {
         .replace(/\s+/g, ' ');
 }
 
+// ==========================================
+// 📊 تحديث العدادات وإظهار الخانتين جنب بعض بالظبط
+// ==========================================
 function updateAllCounts(currentFilteredCount = 0) {
     buttons.forEach(btn => {
         const cat = btn.dataset.filter;
@@ -338,12 +357,23 @@ function updateAllCounts(currentFilteredCount = 0) {
     const favCount = allData.filter(item => item.category !== 'cinema' && getEffectiveRating(item) >= 9).length;
     if (favCountBadge) favCountBadge.innerText = favCount;
 
-    if (activeCategory === 'anime' || activeCategory === 'english_series') {
+    if (activeCategory === 'anime' || activeCategory === 'english_series' || activeCategory === 'arabic_series_2026') {
         const compCount = allData.filter(item => item.category === activeCategory && (item.status || 'completed') === 'completed').length;
         const dropCount = allData.filter(item => item.category === activeCategory && item.status === 'dropped').length;
         
-        const compLabel = activeCategory === 'anime' ? '✅ أنميات كملتها' : '✅ مسلسلات كملتها';
-        const dropLabel = activeCategory === 'anime' ? '❌ أنميات وقفتها' : '❌ مسلسلات وقفتها';
+        let compLabel = '✅ شفتها';
+        let dropLabel = '⏳ عايز أشوفها';
+
+        if (activeCategory === 'anime') {
+            compLabel = '✅ أنميات كملتها';
+            dropLabel = '❌ أنميات وقفتها';
+        } else if (activeCategory === 'english_series') {
+            compLabel = '✅ مسلسلات كملتها';
+            dropLabel = '❌ مسلسلات وقفتها';
+        } else if (activeCategory === 'arabic_series_2026') {
+            compLabel = '✅ شفتها';
+            dropLabel = '⏳ عايز أشوفها';
+        }
         
         subBtnCompleted.innerHTML = `<span>${compLabel}</span> <span class="btn-count">${compCount}</span>`;
         subBtnDropped.innerHTML = `<span>${dropLabel}</span> <span class="btn-count">${dropCount}</span>`;
@@ -356,12 +386,53 @@ function updateAllCounts(currentFilteredCount = 0) {
         titleText = activeSubFilter === 'completed' ? '🎬 إجمالي أنميات كملتها:' : '🛑 إجمالي أنميات وقفتها:';
     } else if (activeCategory === 'english_series') {
         titleText = activeSubFilter === 'completed' ? '📺 إجمالي مسلسلات أجنبي كملتها:' : '🛑 إجمالي مسلسلات أجنبي وقفتها:';
+    } else if (activeCategory === 'arabic_series_2026') {
+        titleText = activeSubFilter === 'completed' ? '📺 إجمالي مسلسلات عربي شفتها:' : '⏳ إجمالي مسلسلات عربي عايز أشوفها:';
     } else {
         titleText = `📊 إجمالي ${categoryNamesMap[activeCategory] || activeCategory}:`;
     }
     
     bannerTitle.innerText = titleText;
     bannerCount.innerText = currentFilteredCount;
+}
+
+function updateSubNavUI() {
+    if (!subNav) return;
+
+    if (activeCategory === 'anime' || activeCategory === 'english_series' || activeCategory === 'arabic_series_2026') {
+        // إجبار الخانتين يظهروا جنب بعض في نفس السطر دايماً على الموبايل واللاب
+        subNav.style.display = 'flex';
+        subNav.style.flexDirection = 'row';
+        subNav.style.flexWrap = 'nowrap';
+        subNav.style.justifyContent = 'center';
+        subNav.style.alignItems = 'center';
+        subNav.style.gap = '10px';
+
+        subBtnCompleted.style.flex = '1';
+        subBtnCompleted.style.justifyContent = 'center';
+        subBtnCompleted.style.whiteSpace = 'nowrap';
+
+        subBtnDropped.style.flex = '1';
+        subBtnDropped.style.justifyContent = 'center';
+        subBtnDropped.style.whiteSpace = 'nowrap';
+
+        // تحديث نص القائمة المنسدلة في الفورم عشان يطابق القسم
+        if (statusSelect && statusSelect.options.length >= 2) {
+            if (activeCategory === 'arabic_series_2026') {
+                statusSelect.options[0].text = 'شفتها (✓)';
+                statusSelect.options[1].text = 'عايز أشوفها (⏳)';
+            } else {
+                statusSelect.options[0].text = 'اكتمل المشاهدة (✓)';
+                statusSelect.options[1].text = 'لم يكتمل (✗)';
+            }
+        }
+    } else {
+        subNav.style.display = 'none';
+        if (statusSelect && statusSelect.options.length >= 2) {
+            statusSelect.options[0].text = 'اكتمل المشاهدة (✓)';
+            statusSelect.options[1].text = 'لم يكتمل (✗)';
+        }
+    }
 }
 
 function rebuildAllDataAndRender() {
@@ -372,7 +443,6 @@ function rebuildAllDataAndRender() {
     const filteredJsonData = baseJsonData.filter(item => {
         const keyWithStatus = `${item.name}_${item.category}_${item.status || 'completed'}`;
         const oldKey = `${item.name}_${item.category}`;
-        // إذا كان العنصر موجوداً في localItems ولكن نسخة JSON تحتوي على صورة hardcoded (poster)، نحتفظ بالـ poster
         const matchingLocal = localItems.find(loc => normalizeText(loc.name) === normalizeText(item.name) && loc.category === item.category);
         if (matchingLocal) {
             if (item.poster && !matchingLocal.poster) {
@@ -395,6 +465,9 @@ function rebuildAllDataAndRender() {
 
 async function loadData() {
     try {
+        populateYearsFrom2026To2005();
+        updateSubNavUI();
+
         const response = await fetch('data.json?v=' + new Date().getTime());
         baseJsonData = await response.json();
         rebuildAllDataAndRender();
@@ -405,18 +478,18 @@ async function loadData() {
 }
 
 function filterAndDisplay() {
+    updateSubNavUI();
     let baseList = [];
 
     if (activeCategory === 'favorites') {
         baseList = allData.filter(item => item.category !== 'cinema' && getEffectiveRating(item) >= 9);
     } else {
         baseList = allData.filter(item => item.category === activeCategory);
-        if (activeCategory === 'anime' || activeCategory === 'english_series') {
+        if (activeCategory === 'anime' || activeCategory === 'english_series' || activeCategory === 'arabic_series_2026') {
             baseList = baseList.filter(item => (item.status || 'completed') === activeSubFilter);
         }
     }
 
-    // تطبيق فلاتر الدوائر (البحث، التقييم، السنة)
     const searchInput = document.getElementById('search-input');
     const ratingSelect = document.getElementById('filter-rating-select');
     const yearSelect = document.getElementById('filter-year-select');
@@ -461,7 +534,8 @@ window.toggleItemStatus = function(encodedName, category) {
     const newStatus = currentStatus === 'completed' ? 'dropped' : 'completed';
     let stoppedAtVal = '';
 
-    if (newStatus === 'dropped') {
+    // لو في الأنمي أو المسلسلات الأجنبي نسأله وقف فين، أما في المسلسلات العربي نوديه لـ "عايز أشوفها" فوراً من غير سؤال
+    if (newStatus === 'dropped' && category !== 'arabic_series_2026') {
         stoppedAtVal = prompt(`وقفت "${name}" عند فين؟ (مثال: الموسم 2 أو الحلقة 5)`, targetItem.stoppedAt || '1 Season');
         if (stoppedAtVal === null) return;
     }
@@ -533,7 +607,7 @@ window.addNewItem = function() {
         tmdb_search_name: name,
         category: activeCategory,
         status: status,
-        stoppedAt: status === 'dropped' ? stoppedAt : "",
+        stoppedAt: (status === 'dropped' && activeCategory !== 'arabic_series_2026') ? stoppedAt : "",
         myRating: myRating ? parseFloat(myRating) : 0,
         lang: activeCategory === 'cinema' ? cinemaLang : null
     };
@@ -555,7 +629,7 @@ window.addNewItem = function() {
     document.getElementById('new-item-rating').value = '';
     stoppedInput.value = '';
 
-    if ((activeCategory === 'anime' || activeCategory === 'english_series') && status !== activeSubFilter) {
+    if ((activeCategory === 'anime' || activeCategory === 'english_series' || activeCategory === 'arabic_series_2026') && status !== activeSubFilter) {
         activeSubFilter = status;
         subButtons.forEach(b => {
             b.classList.toggle('active', b.dataset.subfilter === status);
@@ -662,7 +736,6 @@ async function fetchSmartTMDBData(item) {
     const type = isTV ? 'tv' : 'movie';
     const isArabicCategory = item.category.startsWith('arabic_') || (item.category === 'cinema' && item.lang === 'ar');
 
-    // ✅ أولوية قصوى للصورة المرفوعة على جيت هاب (Hardcoded Poster)
     let posterUrl = item.poster ? item.poster : null;
     let globalRating = null;
     let apiSeasons = '';
@@ -844,14 +917,30 @@ async function displayItems(items, isFavView = false) {
     const fetchPromises = itemsWithRatings.map(async (item) => {
         const tmdbInfo = await fetchSmartTMDBData(item);
 
-        let statusBadge = item.status === 'completed' 
-            ? '<span class="status-badge status-completed">✓ اكتمل</span>' 
-            : `<span class="status-badge status-dropped">✗ وقف عند ${item.stoppedAt || ''}</span>`;
+        let statusBadge = '';
+        if (item.status === 'completed' || !item.status) {
+            statusBadge = item.category === 'arabic_series_2026'
+                ? '<span class="status-badge status-completed">✓ شفتها</span>'
+                : '<span class="status-badge status-completed">✓ اكتمل</span>';
+        } else {
+            statusBadge = item.category === 'arabic_series_2026'
+                ? '<span class="status-badge status-dropped">⏳ عايز أشوفها</span>'
+                : `<span class="status-badge status-dropped">✗ وقف عند ${item.stoppedAt || ''}</span>`;
+        }
 
-        const canToggleStatus = (item.category === 'anime' || item.category === 'english_series');
+        const canToggleStatus = (item.category === 'anime' || item.category === 'english_series' || item.category === 'arabic_series_2026');
+        let toggleBtnLabel = '';
+        if (canToggleStatus) {
+            if (item.category === 'arabic_series_2026') {
+                toggleBtnLabel = item.status === 'dropped' ? '↪️ نقل لـ شفتها' : '⏳ نقل لـ عايز أشوفها';
+            } else {
+                toggleBtnLabel = item.status === 'dropped' ? '↪️ نقل لـ كملتها' : '⏸️ نقل لـ وقفتها';
+            }
+        }
+
         const toggleBtnHtml = canToggleStatus 
             ? `<button class="toggle-status-btn" onclick="toggleItemStatus('${encodeURIComponent(item.name)}', '${item.category}')">
-                ${item.status === 'dropped' ? '↪️ نقل لـ كملتها' : '⏸️ نقل لـ وقفتها'}
+                ${toggleBtnLabel}
                </button>`
             : '';
             
@@ -893,14 +982,6 @@ async function displayItems(items, isFavView = false) {
     container.innerHTML = htmlArray.join('');
 }
 
-function updateSubNavUI() {
-    if (activeCategory === 'anime' || activeCategory === 'english_series') {
-        subNav.style.display = 'flex';
-    } else {
-        subNav.style.display = 'none';
-    }
-}
-
 favBtn.addEventListener('click', () => {
     buttons.forEach(b => b.classList.remove('active'));
     favBtn.classList.add('active');
@@ -926,9 +1007,9 @@ buttons.forEach(btn => {
         updateSubNavUI();
         cinemaLangSelect.style.display = (activeCategory === 'cinema') ? 'block' : 'none';
 
-        if (activeCategory === 'anime' || activeCategory === 'english_series') {
+        if (activeCategory === 'anime' || activeCategory === 'english_series' || activeCategory === 'arabic_series_2026') {
             statusSelect.value = activeSubFilter;
-            stoppedInput.style.display = (activeSubFilter === 'dropped') ? 'block' : 'none';
+            stoppedInput.style.display = (activeSubFilter === 'dropped' && activeCategory !== 'arabic_series_2026') ? 'block' : 'none';
         } else {
             statusSelect.value = 'completed';
             stoppedInput.style.display = 'none';
@@ -945,7 +1026,7 @@ subButtons.forEach(subBtn => {
         
         activeSubFilter = subBtn.dataset.subfilter;
         statusSelect.value = activeSubFilter;
-        stoppedInput.style.display = (activeSubFilter === 'dropped') ? 'block' : 'none';
+        stoppedInput.style.display = (activeSubFilter === 'dropped' && activeCategory !== 'arabic_series_2026') ? 'block' : 'none';
 
         filterAndDisplay();
     });
