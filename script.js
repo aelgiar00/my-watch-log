@@ -312,16 +312,6 @@ function getEffectiveRating(item) {
     return -1;
 }
 
-function normalizeText(text) {
-    if (!text) return '';
-    return text.toString().toLowerCase().trim()
-        .replace(/[أإآ]/g, 'ا')
-        .replace(/ة/g, 'ه')
-        .replace(/ى/g, 'ي')
-        .replace(/[؟!.,،:\-_]/g, '')
-        .replace(/\s+/g, ' ');
-}
-
 function updateAllCounts(currentFilteredCount = 0) {
     buttons.forEach(btn => {
         const cat = btn.dataset.filter;
@@ -338,12 +328,24 @@ function updateAllCounts(currentFilteredCount = 0) {
     const favCount = allData.filter(item => item.category !== 'cinema' && getEffectiveRating(item) >= 9).length;
     if (favCountBadge) favCountBadge.innerText = favCount;
 
-    if (activeCategory === 'anime' || activeCategory === 'english_series') {
+    // تحديث النصوص والأعداد للشريط الفرعي (أنمي، مسلسلات أجنبي، مسلسلات عربي)
+    if (activeCategory === 'anime' || activeCategory === 'english_series' || activeCategory === 'arabic_series_2026') {
         const compCount = allData.filter(item => item.category === activeCategory && (item.status || 'completed') === 'completed').length;
         const dropCount = allData.filter(item => item.category === activeCategory && item.status === 'dropped').length;
         
-        const compLabel = activeCategory === 'anime' ? '✅ أنميات كملتها' : '✅ مسلسلات كملتها';
-        const dropLabel = activeCategory === 'anime' ? '❌ أنميات وقفتها' : '❌ مسلسلات وقفتها';
+        let compLabel = '✅ شفتها';
+        let dropLabel = '⏳ عايز أشوفها';
+
+        if (activeCategory === 'anime') {
+            compLabel = '✅ أنميات شفتها';
+            dropLabel = '⏳ أنميات عايز أشوفها';
+        } else if (activeCategory === 'english_series') {
+            compLabel = '✅ مسلسلات شفتها';
+            dropLabel = '⏳ مسلسلات عايز أشوفها';
+        } else if (activeCategory === 'arabic_series_2026') {
+            compLabel = '✅ شفتها';
+            dropLabel = '⏳ عايز أشوفها';
+        }
         
         subBtnCompleted.innerHTML = `<span>${compLabel}</span> <span class="btn-count">${compCount}</span>`;
         subBtnDropped.innerHTML = `<span>${dropLabel}</span> <span class="btn-count">${dropCount}</span>`;
@@ -353,9 +355,11 @@ function updateAllCounts(currentFilteredCount = 0) {
     if (activeCategory === 'favorites') {
         titleText = '❤️ إجمالي الأعمال المفضلة (9 و 10):';
     } else if (activeCategory === 'anime') {
-        titleText = activeSubFilter === 'completed' ? '🎬 إجمالي أنميات كملتها:' : '🛑 إجمالي أنميات وقفتها:';
+        titleText = activeSubFilter === 'completed' ? '🎬 إجمالي أنميات شفتها:' : '🛑 إجمالي أنميات عايز أشوفها:';
     } else if (activeCategory === 'english_series') {
-        titleText = activeSubFilter === 'completed' ? '📺 إجمالي مسلسلات أجنبي كملتها:' : '🛑 إجمالي مسلسلات أجنبي وقفتها:';
+        titleText = activeSubFilter === 'completed' ? '📺 إجمالي مسلسلات أجنبي شفتها:' : '🛑 إجمالي مسلسلات أجنبي عايز أشوفها:';
+    } else if (activeCategory === 'arabic_series_2026') {
+        titleText = activeSubFilter === 'completed' ? '📺 إجمالي مسلسلات عربي شفتها:' : '🛑 إجمالي مسلسلات عربي عايز أشوفها:';
     } else {
         titleText = `📊 إجمالي ${categoryNamesMap[activeCategory] || activeCategory}:`;
     }
@@ -372,7 +376,6 @@ function rebuildAllDataAndRender() {
     const filteredJsonData = baseJsonData.filter(item => {
         const keyWithStatus = `${item.name}_${item.category}_${item.status || 'completed'}`;
         const oldKey = `${item.name}_${item.category}`;
-        // إذا كان العنصر موجوداً في localItems ولكن نسخة JSON تحتوي على صورة hardcoded (poster)، نحتفظ بالـ poster
         const matchingLocal = localItems.find(loc => normalizeText(loc.name) === normalizeText(item.name) && loc.category === item.category);
         if (matchingLocal) {
             if (item.poster && !matchingLocal.poster) {
@@ -411,12 +414,11 @@ function filterAndDisplay() {
         baseList = allData.filter(item => item.category !== 'cinema' && getEffectiveRating(item) >= 9);
     } else {
         baseList = allData.filter(item => item.category === activeCategory);
-        if (activeCategory === 'anime' || activeCategory === 'english_series') {
+        if (activeCategory === 'anime' || activeCategory === 'english_series' || activeCategory === 'arabic_series_2026') {
             baseList = baseList.filter(item => (item.status || 'completed') === activeSubFilter);
         }
     }
 
-    // تطبيق فلاتر الدوائر (البحث، التقييم، السنة)
     const searchInput = document.getElementById('search-input');
     const ratingSelect = document.getElementById('filter-rating-select');
     const yearSelect = document.getElementById('filter-year-select');
@@ -555,7 +557,7 @@ window.addNewItem = function() {
     document.getElementById('new-item-rating').value = '';
     stoppedInput.value = '';
 
-    if ((activeCategory === 'anime' || activeCategory === 'english_series') && status !== activeSubFilter) {
+    if ((activeCategory === 'anime' || activeCategory === 'english_series' || activeCategory === 'arabic_series_2026') && status !== activeSubFilter) {
         activeSubFilter = status;
         subButtons.forEach(b => {
             b.classList.toggle('active', b.dataset.subfilter === status);
@@ -662,7 +664,6 @@ async function fetchSmartTMDBData(item) {
     const type = isTV ? 'tv' : 'movie';
     const isArabicCategory = item.category.startsWith('arabic_') || (item.category === 'cinema' && item.lang === 'ar');
 
-    // ✅ أولوية قصوى للصورة المرفوعة على جيت هاب (Hardcoded Poster)
     let posterUrl = item.poster ? item.poster : null;
     let globalRating = null;
     let apiSeasons = '';
@@ -848,10 +849,10 @@ async function displayItems(items, isFavView = false) {
             ? '<span class="status-badge status-completed">✓ اكتمل</span>' 
             : `<span class="status-badge status-dropped">✗ وقف عند ${item.stoppedAt || ''}</span>`;
 
-        const canToggleStatus = (item.category === 'anime' || item.category === 'english_series');
+        const canToggleStatus = (item.category === 'anime' || item.category === 'english_series' || item.category === 'arabic_series_2026');
         const toggleBtnHtml = canToggleStatus 
             ? `<button class="toggle-status-btn" onclick="toggleItemStatus('${encodeURIComponent(item.name)}', '${item.category}')">
-                ${item.status === 'dropped' ? '↪️ نقل لـ كملتها' : '⏸️ نقل لـ وقفتها'}
+                ${item.status === 'dropped' ? '↪️ شفتها' : '⏸️ عايز أشوفها'}
                </button>`
             : '';
             
@@ -894,7 +895,7 @@ async function displayItems(items, isFavView = false) {
 }
 
 function updateSubNavUI() {
-    if (activeCategory === 'anime' || activeCategory === 'english_series') {
+    if (activeCategory === 'anime' || activeCategory === 'english_series' || activeCategory === 'arabic_series_2026') {
         subNav.style.display = 'flex';
     } else {
         subNav.style.display = 'none';
@@ -926,7 +927,7 @@ buttons.forEach(btn => {
         updateSubNavUI();
         cinemaLangSelect.style.display = (activeCategory === 'cinema') ? 'block' : 'none';
 
-        if (activeCategory === 'anime' || activeCategory === 'english_series') {
+        if (activeCategory === 'anime' || activeCategory === 'english_series' || activeCategory === 'arabic_series_2026') {
             statusSelect.value = activeSubFilter;
             stoppedInput.style.display = (activeSubFilter === 'dropped') ? 'block' : 'none';
         } else {
