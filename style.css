@@ -164,35 +164,6 @@ header {
     gap: 14px;
 }
 
-.clear-logo-badge {
-    width: 58px;
-    height: 58px;
-    background: linear-gradient(135deg, #252038 0%, #0d0d14 100%);
-    border: 2.5px solid var(--lavender-accent);
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 18px rgba(176, 149, 246, 0.5);
-    flex-shrink: 0;
-}
-
-.clear-logo-badge .play-triangle {
-    color: var(--lavender-accent);
-    font-size: 22px;
-    line-height: 1;
-    filter: drop-shadow(0 0 6px rgba(176, 149, 246, 0.8));
-}
-
-.clear-logo-badge .wl-text {
-    color: var(--gold);
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 1px;
-    margin-top: 2px;
-}
-
 .main-logo {
     width: 56px;
     height: 56px;
@@ -312,7 +283,7 @@ nav {
     border-radius: 15px;
     padding: 14px;
     max-width: 850px;
-    margin: 0 auto 14px auto;
+    margin: 0 auto 16px auto;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
@@ -340,7 +311,6 @@ nav {
     min-width: 130px;
     font-weight: bold;
     font-size: 14px;
-    height: auto !important;
 }
 
 .form-group input:focus, .form-group select:focus {
@@ -364,96 +334,137 @@ nav {
     transform: translateY(-2px);
 }
 
-/* إزالة المساحة الفاضية فوق وتحت السيرش والفلاتر نهائياً */
-.search-filter-container,
-.search-container,
-.filters-container,
-.search-box,
-.filter-bar,
-.controls-container,
-.search-section,
-div:has(> input[placeholder*="ابحث"]),
-div:has(> div > input[placeholder*="ابحث"]) {
-    background-color: var(--card-bg);
-    border: 1px solid #2a2a3a;
-    border-radius: 15px;
-    padding: 12px !important;
-    margin: 0 auto 14px auto !important;
-    max-width: 850px;
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: fit-content !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-start !important;
-    align-items: stretch !important;
-    gap: 10px !important;
+/* 🎯 تصميم الدوائر التفاعلية للبحث والتقييمات والسنين (بدون أي بوردر مربع) */
+.circle-tools-wrapper {
+    max-width: 650px;
+    margin: 0 auto 18px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
 }
 
-.search-filter-container > *,
-.search-container > *,
-.filters-container > *,
-div:has(> input[placeholder*="ابحث"]) > * {
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-    flex: 0 0 auto !important;
+.circle-tools-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
 }
 
-input[placeholder*="ابحث"],
-#search-input {
+.circle-tool-btn {
+    width: 66px;
+    height: 66px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #1f1b2e, #14121d);
+    border: 2px solid var(--lavender-accent);
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(176, 149, 246, 0.25);
+    transition: all 0.25s ease;
+    padding: 0;
+}
+
+.circle-tool-btn:hover,
+.circle-tool-btn.active,
+.circle-select-wrapper.active .circle-tool-btn {
+    background: var(--lavender-accent);
+    color: var(--bg-dark);
+    transform: translateY(-3px) scale(1.06);
+    box-shadow: 0 0 20px rgba(176, 149, 246, 0.65);
+}
+
+.circle-icon {
+    font-size: 1.3em;
+    line-height: 1;
+}
+
+.circle-label {
+    font-size: 0.68em;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* تغليف قائمة الاختيار فوق الدائرة عشان تفتح مباشرة عند الضغط على الدائرة */
+.circle-select-wrapper {
+    position: relative;
+    width: 66px;
+    height: 66px;
+}
+
+.circle-select-wrapper select {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    padding: 10px 14px !important;
-    margin: 0 !important;
-    border-radius: 10px;
-    border: 1px solid #333;
-    background-color: var(--bg-dark);
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 3;
+    border-radius: 50%;
+    background-color: var(--card-bg);
     color: white;
-    font-weight: bold;
+}
+
+.reset-circle-btn {
+    border-color: #00e5ff;
+    box-shadow: 0 4px 14px rgba(0, 229, 255, 0.2);
+}
+
+.reset-circle-btn:hover {
+    background: #00e5ff;
+    color: var(--bg-dark);
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.6);
+}
+
+/* شريط كتابة البحث الانسيابي الذي يظهر عند الضغط على دائرة البحث */
+.expandable-search-bar {
+    width: 100%;
+    max-width: 460px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--card-bg);
+    border: 2px solid var(--lavender-accent);
+    border-radius: 30px;
+    padding: 6px 14px;
+    box-shadow: 0 0 20px rgba(176, 149, 246, 0.35);
+    animation: fadeInSlide 0.2s ease-out;
+}
+
+@keyframes fadeInSlide {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.expandable-search-bar input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
     font-size: 14px;
-    outline: none;
-    height: 42px !important;
-    min-height: 0 !important;
-    flex: 0 0 auto !important;
-}
-
-input[placeholder*="ابحث"]:focus,
-#search-input:focus {
-    border-color: var(--lavender-accent);
-}
-
-.filter-controls,
-.search-filters-row,
-div:has(> input[placeholder*="ابحث"]) > div {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    gap: 8px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    justify-content: center !important;
-    align-items: center !important;
-    height: auto !important;
-    min-height: 0 !important;
-    flex: 0 0 auto !important;
-}
-
-.filter-controls select,
-.filter-controls button,
-.search-filters-row select,
-.search-filters-row button,
-div:has(> input[placeholder*="ابحث"]) select,
-div:has(> input[placeholder*="ابحث"]) button {
-    height: 40px !important;
-    min-height: 0 !important;
-    padding: 6px 12px !important;
-    margin: 0 !important;
-    border-radius: 10px;
-    border: 1px solid #333;
-    background-color: var(--bg-dark);
-    color: white;
     font-weight: bold;
-    font-size: 0.85em;
-    flex: 1 1 auto;
+    outline: none;
+    padding: 6px 4px;
+}
+
+.close-search-btn {
+    background: rgba(255, 77, 77, 0.15);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
 }
 
 .section-stats-wrapper {
@@ -692,17 +703,6 @@ div:has(> input[placeholder*="ابحث"]) button {
         width: 44px;
         height: 44px;
     }
-    .clear-logo-badge {
-        width: 46px;
-        height: 46px;
-        border-radius: 12px;
-    }
-    .clear-logo-badge .play-triangle {
-        font-size: 18px;
-    }
-    .clear-logo-badge .wl-text {
-        font-size: 9px;
-    }
     .filter-btn {
         padding: 7px 12px;
         font-size: 0.82em;
@@ -714,6 +714,13 @@ div:has(> input[placeholder*="ابحث"]) button {
     }
     .form-group input, .form-group select, .form-group button {
         width: 100%;
+    }
+    .circle-tools-row {
+        gap: 12px;
+    }
+    .circle-tool-btn, .circle-select-wrapper {
+        width: 60px;
+        height: 60px;
     }
     #app-container {
         grid-template-columns: repeat(2, 1fr);
